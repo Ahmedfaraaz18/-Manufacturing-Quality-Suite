@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Machine registration{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Machine registration</h1>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Register a machine</h2>
+      <div id="form-error" class="alert alert-danger d-none" style="white-space:pre-line"></div>
+      <form id="machine-form">
+        <div class="mb-3"><label class="form-label">Machine ID</label><input class="form-control" name="machine_id" placeholder="M-HP200" required maxlength="32"></div>
+        <div class="mb-3"><label class="form-label">Model</label><input class="form-control" name="model_name" placeholder="HP-200" required maxlength="64"></div>
+        <div class="mb-3"><label class="form-label">Machine name</label><input class="form-control" name="name" placeholder="Hydraulic forming press" required maxlength="128"></div>
+        <button class="btn btn-primary" type="submit">Register machine</button>
+      </form>
+    </div></div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card"><div class="card-header fw-semibold">Registered machines</div>
+      <table class="table mb-0"><thead><tr><th>Machine ID</th><th>Model</th><th>Name</th><th>Active</th></tr></thead>
+        <tbody>{% for m in machines %}<tr><td>{{ m.machine_id }}</td><td>{{ m.model_name }}</td><td>{{ m.name }}</td><td>{{ m.is_active|yesno:"Yes,No" }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="text-center text-secondary py-3">No machines yet.</td></tr>{% endfor %}</tbody></table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script>
+document.getElementById('machine-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = document.getElementById('form-error'); err.classList.add('d-none');
+  const body = Object.fromEntries(new FormData(e.target));
+  const res = await apiFetch('{% url "api-machines" %}', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+  if (res.ok) { location.reload(); return; }
+  err.textContent = flattenErrors(await res.json().catch(() => null)); err.classList.remove('d-none');
+});
+</script>
+{% endblock %}

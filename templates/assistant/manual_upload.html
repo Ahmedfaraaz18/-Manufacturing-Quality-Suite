@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Upload manual{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Upload manual</h1>
+<div class="row"><div class="col-lg-7">
+  <div class="card"><div class="card-body">
+    {% if not machines %}<div class="alert alert-warning">Register a machine first.</div>{% endif %}
+    <div id="form-error" class="alert alert-danger d-none" style="white-space:pre-line"></div>
+    <div id="form-ok" class="alert alert-success d-none"></div>
+    <form id="upload-form" enctype="multipart/form-data">
+      <div class="mb-3"><label class="form-label">Machine</label>
+        <select class="form-select" name="machine" required>{% for m in machines %}<option value="{{ m.machine_id }}">{{ m.machine_id }} — {{ m.model_name }} ({{ m.name }})</option>{% endfor %}</select></div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">Document ID</label><input class="form-control" name="document_id" placeholder="HP-MNT-01" required maxlength="64"></div>
+        <div class="col-md-6 mb-3"><label class="form-label">Revision</label><input class="form-control" name="revision" placeholder="1.0" required maxlength="32"></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Document name</label><input class="form-control" name="document_name" placeholder="HP 200 Maintenance Manual" required maxlength="255"></div>
+      <div class="mb-3"><label class="form-label">PDF file (max {{ max_mb }} MB)</label><input class="form-control" type="file" name="file" accept="application/pdf,.pdf" required></div>
+      <button class="btn btn-primary" id="submit-btn" type="submit" {% if not machines %}disabled{% endif %}>Upload and index</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script>
+document.getElementById('upload-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = document.getElementById('form-error'), ok = document.getElementById('form-ok'), btn = document.getElementById('submit-btn');
+  err.classList.add('d-none'); ok.classList.add('d-none'); btn.disabled = true; btn.textContent = 'Indexing…';
+  const res = await apiFetch('{% url "api-manuals" %}', {method: 'POST', body: new FormData(e.target)});
+  const data = await res.json().catch(() => null);
+  btn.disabled = false; btn.textContent = 'Upload and index';
+  if (res.ok) {
+    ok.textContent = `Uploaded ${data.document_id} rev ${data.revision}: ${data.status_display}, ${data.page_count} pages.`;
+    ok.classList.remove('d-none'); e.target.reset();
+  } else { err.textContent = flattenErrors(data); err.classList.remove('d-none'); }
+});
+</script>
+{% endblock %}

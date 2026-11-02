@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Administrator dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Administrator dashboard</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{% url 'machine-registration' %}">Register machine</a>
+    <a class="btn btn-primary" href="{% url 'manual-upload' %}">Upload manual</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Machines</div><div class="h3 mb-0">{{ machine_count }}</div></div></div></div>
+  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Manuals</div><div class="h3 mb-0">{{ manuals|length }}</div></div></div></div>
+  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Indexed chunks</div><div class="h3 mb-0">{{ chunk_count }}</div></div></div></div>
+  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Questions asked</div><div class="h3 mb-0">{{ question_count }}</div></div></div></div>
+</div>
+<div class="card">
+  <div class="card-header fw-semibold">Registered manuals</div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Machine</th><th>Document ID</th><th>Name</th><th>Rev</th><th>Pages</th><th>Chunks</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for m in manuals %}
+        <tr>
+          <td>{{ m.machine.machine_id }}</td><td>{{ m.document_id }}</td><td>{{ m.document_name }}</td><td>{{ m.revision }}</td>
+          <td>{{ m.page_count }}</td><td>{{ m.chunk_count }}</td>
+          <td><span class="badge {% if m.status == 'indexed' %}text-bg-success{% elif m.status == 'failed' %}text-bg-danger{% else %}text-bg-secondary{% endif %}"
+                    {% if m.error_message %}title="{{ m.error_message }}"{% endif %}>{{ m.get_status_display }}</span></td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'manual-page' m.pk 1 %}">View</a>
+            <button class="btn btn-sm btn-outline-primary reindex-btn" data-url="{% url 'api-manual-reindex' m.pk %}">Re-index</button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-center text-secondary py-4">No manuals registered yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div id="reindex-error" class="alert alert-danger d-none" role="alert"></div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script>
+document.querySelectorAll('.reindex-btn').forEach(btn => btn.addEventListener('click', async () => {
+  const error = document.getElementById('reindex-error');
+  error.classList.add('d-none'); error.textContent = '';
+  btn.disabled = true; btn.textContent = 'Indexing…';
+  try {
+    const res = await apiFetch(btn.dataset.url, {method: 'POST'});
+    const data = await res.json().catch(() => null);
+    if (res.ok) { location.reload(); return; }
+    error.textContent = (data && data.error_message) || 'Re-index failed. Please try again.';
+    error.classList.remove('d-none');
+  } catch (err) {
+    error.textContent = 'Re-index failed. Please try again.';
+    error.classList.remove('d-none');
+  }
+  btn.disabled = false; btn.textContent = 'Re-index';
+}));
+</script>
+{% endblock %}

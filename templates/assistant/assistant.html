@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Assistant — {{ machine.model_name }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div>
+    <div class="text-secondary small">Selected machine</div>
+    <h1 class="h3 mb-0">{{ machine.model_name }} <small class="text-secondary">{{ machine.machine_id }} · {{ machine.name }}</small></h1>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'engineer-dashboard' %}">Change machine</a>
+</div>
+<div class="alert alert-secondary py-2 small">
+  Searching only: {% for m in manuals %}<strong>{{ m.document_id }}</strong> rev {{ m.revision }}{% if not forloop.last %}, {% endif %}{% empty %}<em>no indexed manuals for this machine</em>{% endfor %}.
+  Answers are grounded in these manuals only; if the evidence is missing the assistant will say so.
+</div>
+<div id="chat-log" class="mb-3"></div>
+<form id="ask-form" class="card card-body shadow-sm" data-machine="{{ machine.machine_id }}" data-url="{% url 'api-ask' %}">
+  <label class="form-label fw-semibold" for="question">Your question about {{ machine.model_name }}</label>
+  <div class="input-group">
+    <input class="form-control" id="question" maxlength="1000" placeholder="e.g. What does E17 mean?" autocomplete="off" required>
+    <button class="btn btn-primary" id="ask-btn" type="submit">Ask</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script src="{% static 'assistant/js/chat.js' %}"></script>
+{% endblock %}

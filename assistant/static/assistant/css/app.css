@@ -1,0 +1,9 @@
+.source-card { border-left: 4px solid var(--bs-primary); }
+.passage { white-space: pre-wrap; background: var(--bs-light); border-radius: .375rem; padding: .75rem; font-size: .9rem; }
+.answer-text { white-space: pre-wrap; }
+.msg-user { background: var(--bs-primary); color: #fff; border-radius: 1rem 1rem .25rem 1rem; }
+.status-insufficient { border: 2px solid var(--bs-warning); background: #fff8e1; }
+.status-error { border: 2px solid var(--bs-danger); background: #fdecea; }
+.status-answered { border: 2px solid var(--bs-success); }
+#chat-log { min-height: 40vh; }
+.pdf-frame { width: 100%; height: 75vh; border: 1px solid var(--bs-border-color); border-radius: .375rem; background: #fff; }

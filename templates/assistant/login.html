@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-1">Manufacturing Manual Assistant</h1>
+        <p class="text-secondary small mb-4">Sign in to continue.</p>
+        {% if form.errors %}<div class="alert alert-danger py-2">Incorrect username or password.</div>{% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          <div class="mb-3"><label class="form-label" for="id_username">Username</label>
+            <input class="form-control" id="id_username" name="username" autocomplete="username" autofocus required></div>
+          <div class="mb-3"><label class="form-label" for="id_password">Password</label>
+            <input class="form-control" id="id_password" name="password" type="password" autocomplete="current-password" required></div>
+          <button class="btn btn-primary w-100" type="submit">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

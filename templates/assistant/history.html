@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">{{ title }}</h1>
+<form class="card card-body mb-3" method="get">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4"><label class="form-label small">Machine</label>
+      <select class="form-select" name="machine"><option value="">All machines</option>
+        {% for m in machines %}<option value="{{ m.machine_id }}" {% if filters.machine == m.machine_id %}selected{% endif %}>{{ m.machine_id }} — {{ m.model_name }}</option>{% endfor %}</select></div>
+    <div class="col-md-4"><label class="form-label small">Status</label>
+      <select class="form-select" name="status"><option value="">All statuses</option>
+        {% for value, label in statuses %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-md-4 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Filter</button>
+      {% if show_user %}<a class="btn btn-outline-warning" href="?unanswered=1">Unanswered only</a>{% endif %}
+      <a class="btn btn-outline-secondary" href="?">Reset</a></div>
+  </div>
+</form>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead><tr><th>Time (UTC)</th>{% if show_user %}<th>User</th>{% endif %}<th>Machine</th><th>Question</th><th>Status</th><th>Answer and sources</th></tr></thead>
+      <tbody>
+      {% for q in page %}
+        <tr>
+          <td class="text-nowrap small">{{ q.created_at|date:"Y-m-d H:i" }}</td>
+          {% if show_user %}<td>{{ q.user.username }}</td>{% endif %}
+          <td class="text-nowrap">{{ q.machine.machine_id }}</td>
+          <td style="min-width:14rem">{{ q.question }}</td>
+          <td><span class="badge {% if q.status == 'answered' %}text-bg-success{% elif q.status == 'insufficient_evidence' %}text-bg-warning{% else %}text-bg-danger{% endif %}">{{ q.get_status_display }}</span></td>
+          <td style="min-width:18rem">
+            <details><summary class="small">View answer</summary>
+              <div class="answer-text small my-2">{{ q.display_answer }}</div>
+              {% for s in q.verified_sources %}
+                <div class="small border-start border-primary border-3 ps-2 mb-1">
+                  {% if s.manual_id %}<a href="{% url 'manual-page' s.manual_id s.page_number %}?source={{ s.pk }}">{{ s.document_id }} rev {{ s.revision }}, p.{{ s.page_number }}</a>
+                  {% else %}{{ s.document_id }} rev {{ s.revision }}, p.{{ s.page_number }}{% endif %}
+                </div>
+              {% endfor %}
+            </details>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center text-secondary py-4">No questions match.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if page.paginator.num_pages > 1 %}
+<nav class="mt-3 d-flex gap-2">
+  {% if page.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?{% for k, v in filters.items %}{% if k != 'page' %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+  <span class="align-self-center small">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?{% for k, v in filters.items %}{% if k != 'page' %}{{ k }}={{ v|urlencode }}&{% endif %}{% endfor %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
