@@ -1,0 +1,14 @@
+Django==6.1.2
+djangorestframework==3.18.3
+psycopg[binary]==3.3.6
+celery==5.6.3
+redis==8.1.0
+numpy==2.5.4
+pillow==13.0.0
+reportlab==5.1.0
+python-dotenv==1.2.4
+pymupdf==2.0
+groq==1.7.0
+sentence-transformers==6.2.0
+# The supplied classifier pins numpy==2.3.5 and Pillow==12.3.0 (Model/requirements.txt). The versions
+# above were verified to give identical predictions on all 60 samples (see README, "Model evaluation").

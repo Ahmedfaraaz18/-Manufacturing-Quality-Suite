@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% block title %}Administrator dashboard{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Administrator dashboard</h1>
+<div class="page-header">
+  <div><div class="page-eyebrow">Administration</div><h1 class="page-heading">Operations overview</h1><p class="page-subtitle">Monitor registered equipment, controlled manuals and indexing health.</p></div>
   <div class="d-flex gap-2">
     <a class="btn btn-outline-primary" href="{% url 'machine-registration' %}">Register machine</a>
     <a class="btn btn-primary" href="{% url 'manual-upload' %}">Upload manual</a>
   </div>
 </div>
 <div class="row g-3 mb-4">
-  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Machines</div><div class="h3 mb-0">{{ machine_count }}</div></div></div></div>
-  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Manuals</div><div class="h3 mb-0">{{ manuals|length }}</div></div></div></div>
-  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Indexed chunks</div><div class="h3 mb-0">{{ chunk_count }}</div></div></div></div>
-  <div class="col-sm-3"><div class="card"><div class="card-body"><div class="text-secondary small">Questions asked</div><div class="h3 mb-0">{{ question_count }}</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Registered machines</div><div class="metric-value">{{ machine_count }}</div><div class="metric-note">Active machine catalogue</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Uploaded manuals</div><div class="metric-value">{{ manuals|length }}</div><div class="metric-note">Revision-controlled files</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Indexed passages</div><div class="metric-value">{{ chunk_count }}</div><div class="metric-note">Searchable evidence chunks</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Questions answered</div><div class="metric-value">{{ question_count }}</div><div class="metric-note">Recorded engineering requests</div></div></div></div>
 </div>
 <div class="card">
-  <div class="card-header fw-semibold">Registered manuals</div>
+  <div class="card-header"><div class="section-title">Manual register</div><div class="section-kicker">Source documents available to the assistant</div></div>
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead><tr><th>Machine</th><th>Document ID</th><th>Name</th><th>Rev</th><th>Pages</th><th>Chunks</th><th>Status</th><th></th></tr></thead>

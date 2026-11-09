@@ -18,7 +18,11 @@ HOME_BY_ROLE = {
 
 @login_required
 def home(request):
-    return redirect(HOME_BY_ROLE.get(request.user.role, 'login'))
+    """Landing page after sign-in: the Round 2 visual-inspection workflow for the user's role.
+
+    The Round 1 manual-assistant dashboards remain at their original URLs (see HOME_BY_ROLE).
+    """
+    return redirect('inspections-home')
 
 
 # ---- Administrator -------------------------------------------------------------------------------

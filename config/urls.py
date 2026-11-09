@@ -20,5 +20,6 @@ from assistant.admin import manufacturing_admin_site
 
 urlpatterns = [
     path('admin/', manufacturing_admin_site.urls),
+    path('', include('inspections.urls')),
     path('', include('assistant.urls')),
 ]

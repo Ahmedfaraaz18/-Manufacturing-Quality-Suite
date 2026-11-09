@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Inspection administration{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-eyebrow">Administration</div><h1 class="page-heading">Inspection overview</h1>
+    <p class="page-subtitle">Register products and monitor classifier activity. Administrators do not submit or review inspections.</p></div>
+  <div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary" href="{% url 'inspection-evaluation' %}">Model evaluation</a><button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#product-modal" id="new-product-btn">Register product</button></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Registered products</div><div class="metric-value">{{ product_count }}</div><div class="metric-note">Active and inactive products</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Total inspections</div><div class="metric-value">{{ stats.total }}</div><div class="metric-note">All submitted inspection records</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Completed</div><div class="metric-value">{{ stats.completed }}</div><div class="metric-note">{{ stats.reviewed }} reviewed · {{ stats.corrected }} corrected</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Queued</div><div class="metric-value">{{ stats.queued }}</div><div class="metric-note">Awaiting worker processing</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Processing</div><div class="metric-value">{{ stats.processing }}</div><div class="metric-note">Classifier is running</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Failed</div><div class="metric-value">{{ stats.failed }}</div><div class="metric-note">Rejected files and classifier errors</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Predicted normal / defective</div><div class="metric-value">{{ stats.normal }} / {{ stats.defective }}</div><div class="metric-note">Original model output only</div></div></div></div>
+</div>
+
+<section class="card mb-4" aria-labelledby="round3-admin-title">
+  <div class="card-header d-flex justify-content-between align-items-center gap-3">
+    <div><h2 class="section-title" id="round3-admin-title">Quality incident oversight</h2><div class="section-kicker">Read-only operational visibility · Supervisor review permissions are not granted to administrators</div></div>
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'quality-incident-list' %}">View incident register</a>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-3"><div class="metric-inset"><span>Total incidents</span><strong>{{ quality_incident_stats.total }}</strong></div></div>
+      <div class="col-6 col-xl-3"><div class="metric-inset"><span>Pending review</span><strong>{{ quality_incident_stats.pending }}</strong></div></div>
+      <div class="col-6 col-xl-3"><div class="metric-inset"><span>Sufficient evidence</span><strong>{{ quality_incident_stats.sufficient }}</strong></div></div>
+      <div class="col-6 col-xl-3"><div class="metric-inset"><span>Manual review required</span><strong>{{ quality_incident_stats.insufficient }}</strong></div></div>
+    </div>
+    <div class="row g-3 align-items-start">
+      <div class="col-lg-5">
+        <h3 class="chart-title">User accounts by role</h3>
+        <div class="role-summary">
+          <div><span>Administrators</span><strong>{{ role_counts.administrator|default:0 }}</strong></div>
+          <div><span>Engineers</span><strong>{{ role_counts.engineer|default:0 }}</strong></div>
+          <div><span>Supervisors</span><strong>{{ role_counts.supervisor|default:0 }}</strong></div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <h3 class="chart-title">Recent incident activity</h3>
+        <div class="incident-activity-list">
+          {% for incident in recent_incidents %}
+          <a class="incident-activity-row" href="{% url 'quality-incident-detail' incident.pk %}">
+            <span class="incident-activity-id">#{{ incident.pk }}</span>
+            <span class="incident-activity-meta"><strong>{{ incident.product_id }} · Inspection #{{ incident.inspection_id }}</strong><small>{{ incident.created_at|date:"Y-m-d H:i" }} UTC · {{ incident.created_by.username }}</small></span>
+            <span class="status-badge status-review-{{ incident.review_status }}">{{ incident.get_review_status_display }}</span>
+          </a>
+          {% empty %}
+          <div class="empty-state py-3"><div class="es-title">No incident activity</div>New quality incidents will appear here.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="row g-4" id="admin-app" data-products-api="{% url 'api-products' %}">
+  <div class="col-xl-7">
+    <div class="card mb-4">
+      <div class="card-header"><div class="section-title">Registered products</div><div class="section-kicker">Only active products can receive uploads</div></div>
+      <div class="table-responsive"><table class="table align-middle mb-0">
+        <thead><tr><th>Product ID</th><th>Name</th><th>Inspections</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for p in products %}
+          <tr><td class="fw-semibold">{{ p.product_id }}</td>
+            <td>{{ p.name }}<div class="small text-secondary">{{ p.description }}</div></td>
+            <td>{{ p.inspection_count }}</td>
+            <td>{% if p.is_active %}<span class="chip chip-completed">Active</span>{% else %}<span class="chip chip-queued">Inactive</span>{% endif %}</td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-primary edit-product" type="button" data-bs-toggle="modal" data-bs-target="#product-modal"
+                data-product-id="{{ p.product_id }}" data-name="{{ p.name }}" data-description="{{ p.description }}" data-active="{{ p.is_active|yesno:'1,0' }}">Edit</button></td></tr>
+        {% empty %}
+          <tr><td colspan="5"><div class="empty-state"><div class="es-title">No products registered</div>Register <strong>P-PLATE01</strong> (Demonstration metal plate) to enable inspections.</div></td></tr>
+        {% endfor %}
+        </tbody></table></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between"><div class="section-title">Recent activity</div></div>
+      <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Record</th><th>By</th><th>Status</th><th>Prediction</th><th>When</th></tr></thead>
+        <tbody>
+        {% for i in recent %}
+          <tr><td><a class="row-link fw-semibold" href="{% url 'inspection-detail' i.pk %}">#{{ i.pk }}</a><div class="small text-secondary text-break" style="max-width:200px">{{ i.original_filename }}</div></td>
+            <td>{{ i.submitting_user.username }}</td>
+            <td><span class="chip chip-{{ i.status }}">{{ i.get_status_display }}</span></td>
+            <td>{% if i.predicted_class %}<span class="chip chip-{{ i.predicted_class|lower }}">{{ i.predicted_class }}</span>{% else %}—{% endif %}</td>
+            <td class="text-nowrap small">{{ i.created_at|date:"Y-m-d H:i" }}</td></tr>
+        {% empty %}
+          <tr><td colspan="5"><div class="empty-state"><div class="es-title">No activity yet</div>Inspections submitted by engineers will appear here.</div></td></tr>
+        {% endfor %}
+        </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="col-xl-5">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center"><div class="section-title">Classifier</div>
+        {% if model_ok %}<span class="chip chip-completed">Files verified</span>{% else %}<span class="chip chip-failed">Verification failed</span>{% endif %}</div>
+      <div class="card-body">
+        <dl class="kv">
+          <dt>Model version</dt><dd>{{ model.model_version|default:"—" }}</dd>
+          <dt>Product</dt><dd>{{ model.product_id|default:"—" }}</dd>
+          <dt>Classes</dt><dd>0 = Normal · 1 = Defective</dd>
+          <dt>Decision threshold</dt><dd>Defective when defect probability ≥ {{ model.decision_threshold|default:"0.5" }}</dd>
+          <dt>Architecture</dt><dd>{{ model.architecture|default:"—" }}</dd>
+          <dt>Training data</dt><dd>{{ model.training|default:"—" }}</dd>
+          <dt>Limitations</dt><dd>{{ model.limitations|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card mt-4"><div class="card-header d-flex justify-content-between"><div><div class="section-title">Integrity and evaluation</div><div class="section-kicker">Compact verification status for supplied assets</div></div>{% if organizer_ok %}<span class="chip chip-completed">Organizer data verified</span>{% else %}<span class="chip chip-failed">Integrity attention</span>{% endif %}</div><div class="card-body"><dl class="kv mb-0"><dt>Model files</dt><dd>{% if model_ok %}Verified{% else %}Verification failed{% endif %}</dd><dt>Organizer files</dt><dd>{{ organizer_verified_count }} verified{% if organizer_mismatch_count %}; {{ organizer_mismatch_count }} need attention{% endif %}</dd><dt>Last model evaluation</dt><dd>{% if evaluation_updated %}{{ evaluation_updated|date:"Y-m-d H:i:s" }} UTC{% else %}Not run{% endif %}</dd></dl><p class="disclaimer mt-3 mb-0">Evaluation uses organiser-provided synthetic data. It does not establish real-world manufacturing performance.</p></div></div>
+  </div>
+</div>
+
+<div class="modal fade" id="product-modal" tabindex="-1" aria-labelledby="product-modal-title" aria-hidden="true">
+  <div class="modal-dialog"><form class="modal-content" id="product-form">
+    <div class="modal-header"><h2 class="modal-title fs-5" id="product-modal-title">Register product</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body">
+      <div id="product-error" class="alert alert-danger d-none" style="white-space:pre-line"></div>
+      <div class="mb-3"><label class="form-label" for="pf-id">Product ID</label><input class="form-control" id="pf-id" name="product_id" value="P-PLATE01" maxlength="32" required></div>
+      <div class="mb-3"><label class="form-label" for="pf-name">Name</label><input class="form-control" id="pf-name" name="name" value="Demonstration metal plate" maxlength="128" required></div>
+      <div class="mb-3"><label class="form-label" for="pf-desc">Description</label><textarea class="form-control" id="pf-desc" name="description" rows="3">Synthetic centered plate with scratches or pits</textarea></div>
+      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="pf-active" name="is_active" checked><label class="form-check-label" for="pf-active">Active (accepts uploads)</label></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary" id="product-save">Save</button></div>
+  </form></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script src="{% static 'inspections/js/admin.js' %}"></script>
+{% endblock %}

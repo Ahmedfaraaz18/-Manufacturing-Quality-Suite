@@ -1,27 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}{{ manual.document_id }} — page {{ page }}{% endblock %}
+{% block title %}{{ manual.document_id }} - page {{ page }}{% endblock %}
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-  <div>
-    <h1 class="h4 mb-0">{{ manual.document_id }} — {{ manual.document_name }}</h1>
-    <div class="text-secondary">Machine {{ manual.machine.machine_id }} · Revision {{ manual.revision }} · PDF page {{ page }} of {{ manual.page_count }}</div>
-  </div>
-  <div class="btn-group">
-    {% if prev_page %}<a class="btn btn-outline-secondary" href="{% url 'manual-page' manual.pk prev_page %}">&laquo; Page {{ prev_page }}</a>{% endif %}
-    {% if next_page %}<a class="btn btn-outline-secondary" href="{% url 'manual-page' manual.pk next_page %}">Page {{ next_page }} &raquo;</a>{% endif %}
-    <a class="btn btn-outline-primary" href="{% url 'manual-file' manual.pk %}#page={{ page }}" target="_blank" rel="noopener">Open PDF</a>
-  </div>
+<div class="page-header">
+  <div><div class="page-eyebrow">Source document</div><h1 class="page-heading">{{ manual.document_id }}</h1><p class="page-subtitle">{{ manual.document_name }} &middot; {{ manual.machine.machine_id }} &middot; Revision {{ manual.revision }}</p></div>
+  <div class="btn-group">{% if prev_page %}<a class="btn btn-outline-secondary" href="{% url 'manual-page' manual.pk prev_page %}">Previous page</a>{% endif %}{% if next_page %}<a class="btn btn-outline-secondary" href="{% url 'manual-page' manual.pk next_page %}">Next page</a>{% endif %}<a class="btn btn-primary" href="{% url 'manual-file' manual.pk %}#page={{ page }}" target="_blank" rel="noopener">Open PDF</a></div>
 </div>
-<div class="row g-3">
-  <div class="col-lg-8"><iframe class="pdf-frame" title="Manual PDF" src="{% url 'manual-file' manual.pk %}#page={{ page }}&view=FitH"></iframe></div>
-  <div class="col-lg-4">
-    {% if cited %}
-    <div class="card source-card mb-3"><div class="card-header fw-semibold">Cited passage</div><div class="card-body"><div class="passage">{{ cited.passage }}</div></div></div>
-    {% endif %}
-    <div class="card"><div class="card-header fw-semibold">Extracted text, page {{ page }}</div>
-      <div class="card-body small">
-        {% for c in page_chunks %}<div class="passage mb-2">{{ c.chunk_text }}</div>{% empty %}<span class="text-secondary">No indexed text for this page.</span>{% endfor %}
-      </div></div>
-  </div>
-</div>
+<div class="row g-4"><div class="col-lg-8"><div class="card"><div class="card-header d-flex justify-content-between"><span>Original PDF</span><span class="section-kicker">Page {{ page }} of {{ manual.page_count }}</span></div><div class="card-body p-2"><iframe class="pdf-frame" title="Manual PDF" src="{% url 'manual-file' manual.pk %}#page={{ page }}&view=FitH"></iframe></div></div></div>
+<div class="col-lg-4">
+  {% if cited %}<div class="card source-card mb-3"><div class="card-header">Cited passage</div><div class="card-body"><div class="passage">{{ cited.passage }}</div></div></div>{% endif %}
+  <div class="card"><div class="card-header"><div class="section-title">Extracted page text</div><div class="section-kicker">Indexed evidence for page {{ page }}</div></div><div class="card-body small">{% for c in page_chunks %}<div class="passage mb-2">{{ c.chunk_text }}</div>{% empty %}<span class="text-secondary">No indexed text for this page.</span>{% endfor %}</div></div>
+</div></div></div>
 {% endblock %}

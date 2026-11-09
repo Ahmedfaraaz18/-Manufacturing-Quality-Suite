@@ -376,10 +376,12 @@ class HistoryAccessTests(BaseTestCase):
         self.assertEqual(self.client_for(self.admin).get(reverse('machine-registration')).status_code, 200)
 
     def test_login_redirects_to_role_home(self):
+        """Round 2 made the visual-inspection workspace the landing page; Round 1 pages keep their URLs."""
         self.client.logout()
         response = self.client.post(reverse('login'), {'username': 'eng1', 'password': 'pw-Eng-1!'})
-        self.assertRedirects(response, reverse('home'), fetch_redirect_response=False)
-        self.assertRedirects(self.client.get(reverse('home')), reverse('engineer-dashboard'), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse('inspections-home'), fetch_redirect_response=False)
+        self.assertRedirects(self.client.get(reverse('home')), reverse('inspections-home'), fetch_redirect_response=False)
+        self.assertEqual(self.client.get(reverse('engineer-dashboard')).status_code, 200)
 
 
 class LegacyHistorySafetyTests(BaseTestCase):

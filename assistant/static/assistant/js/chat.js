@@ -20,7 +20,7 @@ function sourceCard(s, index) {
   const link = s.source_url
     ? `<a class="btn btn-sm btn-outline-primary" href="${s.source_url}" target="_blank" rel="noopener">Open source page ${s.page_number}</a>`
     : '<span class="text-secondary small">Source file no longer available</span>';
-  return `<div class="card source-card mb-2"><div class="card-body py-2">
+  return `<div class="card source-card mb-2"><div class="card-body">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
       <div><strong>[${index}] ${escapeHtml(s.document_id)}</strong> — ${escapeHtml(s.document_name)}<br>
         <span class="text-secondary small">Revision ${escapeHtml(s.revision)} · PDF page ${s.page_number}</span></div>${link}
@@ -32,7 +32,7 @@ function answerCard(data) {
   const st = STATUS[data.status] || STATUS.error;
   const sources = (data.sources || []).map((s, i) => sourceCard(s, i + 1)).join('');
   const div = document.createElement('div');
-  div.className = 'mb-4';
+  div.className = 'mb-4 chat-answer';
   div.innerHTML = `<div class="card ${st.cls}"><div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <span class="badge ${st.badge}">${st.title}</span>

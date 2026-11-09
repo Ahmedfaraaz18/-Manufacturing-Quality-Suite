@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Upload manual{% endblock %}
 {% block content %}
-<h1 class="h3 mb-3">Upload manual</h1>
-<div class="row"><div class="col-lg-7">
-  <div class="card"><div class="card-body">
+<div class="page-header"><div><div class="page-eyebrow">Document control</div><h1 class="page-heading">Upload a manual</h1><p class="page-subtitle">Register a revision-controlled PDF and index it for evidence retrieval.</p></div><a class="btn btn-outline-secondary" href="{% url 'admin-dashboard' %}">Back to overview</a></div>
+<div class="row g-4"><div class="col-lg-8">
+  <div class="card"><div class="card-body p-4">
+    <div class="section-title mb-1">Manual details</div><p class="section-kicker mb-4">All fields are validated before the document is added to the knowledge base.</p>
     {% if not machines %}<div class="alert alert-warning">Register a machine first.</div>{% endif %}
     <div id="form-error" class="alert alert-danger d-none" style="white-space:pre-line"></div>
     <div id="form-ok" class="alert alert-success d-none"></div>

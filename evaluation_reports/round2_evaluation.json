@@ -1,0 +1,652 @@
+{
+  "generated_at": "2026-11-03T01:54:23.627135+00:00",
+  "model_version": "BIT-PLATE-CV-1.0",
+  "product_id": "P-PLATE01",
+  "decision_threshold": 0.5,
+  "samples_per_class": {
+    "Normal": 30,
+    "Defective": 30
+  },
+  "metrics": {
+    "total_samples": 60,
+    "successful_predictions": 60,
+    "failed_predictions": 0,
+    "true_positives": 30,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "true_negatives": 30,
+    "confusion_matrix": {
+      "rows_actual": [
+        "Normal",
+        "Defective"
+      ],
+      "columns_predicted": [
+        "Normal",
+        "Defective"
+      ],
+      "matrix": [
+        [
+          30,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ]
+    },
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "defect_recall": 1.0,
+    "accuracy": 1.0
+  },
+  "rows": [
+    {
+      "image_id": "R2-001",
+      "relative_path": "images/inspection_001.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-002",
+      "relative_path": "images/inspection_002.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9283334232312475,
+      "defect_probability": 0.07166657676875254,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-003",
+      "relative_path": "images/inspection_003.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-004",
+      "relative_path": "images/inspection_004.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9974611867573687,
+      "defect_probability": 0.9974611867573687,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-005",
+      "relative_path": "images/inspection_005.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9387086429826484,
+      "defect_probability": 0.061291357017351555,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-006",
+      "relative_path": "images/inspection_006.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9126221665977611,
+      "defect_probability": 0.08737783340223895,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-007",
+      "relative_path": "images/inspection_007.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9636446223818823,
+      "defect_probability": 0.036355377618117656,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-008",
+      "relative_path": "images/inspection_008.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9780087570621591,
+      "defect_probability": 0.021991242937840928,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-009",
+      "relative_path": "images/inspection_009.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999999996,
+      "defect_probability": 0.9999999999999996,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-010",
+      "relative_path": "images/inspection_010.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9457607061856069,
+      "defect_probability": 0.05423929381439307,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-011",
+      "relative_path": "images/inspection_011.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9981457725827443,
+      "defect_probability": 0.9981457725827443,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-012",
+      "relative_path": "images/inspection_012.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-013",
+      "relative_path": "images/inspection_013.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9867890415588346,
+      "defect_probability": 0.013210958441165422,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-014",
+      "relative_path": "images/inspection_014.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999843379909718,
+      "defect_probability": 0.9999843379909718,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-015",
+      "relative_path": "images/inspection_015.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999974909848,
+      "defect_probability": 0.9999999974909848,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-016",
+      "relative_path": "images/inspection_016.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9753749044773554,
+      "defect_probability": 0.024625095522644577,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-017",
+      "relative_path": "images/inspection_017.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9504381467604366,
+      "defect_probability": 0.04956185323956341,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-018",
+      "relative_path": "images/inspection_018.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9654300634576793,
+      "defect_probability": 0.03456993654232061,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-019",
+      "relative_path": "images/inspection_019.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999255168691176,
+      "defect_probability": 0.9999255168691176,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-020",
+      "relative_path": "images/inspection_020.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9630143290531481,
+      "defect_probability": 0.03698567094685192,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-021",
+      "relative_path": "images/inspection_021.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9756950073617577,
+      "defect_probability": 0.024304992638242224,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-022",
+      "relative_path": "images/inspection_022.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9996785871060322,
+      "defect_probability": 0.9996785871060322,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-023",
+      "relative_path": "images/inspection_023.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-024",
+      "relative_path": "images/inspection_024.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999999423,
+      "defect_probability": 0.9999999999999423,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-025",
+      "relative_path": "images/inspection_025.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9957718150731211,
+      "defect_probability": 0.9957718150731211,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-026",
+      "relative_path": "images/inspection_026.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9042998146650771,
+      "defect_probability": 0.0957001853349229,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-027",
+      "relative_path": "images/inspection_027.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999889839491176,
+      "defect_probability": 0.9999889839491176,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-028",
+      "relative_path": "images/inspection_028.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9426139054045017,
+      "defect_probability": 0.0573860945954983,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-029",
+      "relative_path": "images/inspection_029.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999028562,
+      "defect_probability": 0.9999999999028562,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-030",
+      "relative_path": "images/inspection_030.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9775489774308087,
+      "defect_probability": 0.022451022569191303,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-031",
+      "relative_path": "images/inspection_031.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.999999789049912,
+      "defect_probability": 0.999999789049912,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-032",
+      "relative_path": "images/inspection_032.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-033",
+      "relative_path": "images/inspection_033.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 1.0,
+      "defect_probability": 1.0,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-034",
+      "relative_path": "images/inspection_034.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9936130356660375,
+      "defect_probability": 0.9936130356660375,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-035",
+      "relative_path": "images/inspection_035.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999999996,
+      "defect_probability": 0.9999999999999996,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-036",
+      "relative_path": "images/inspection_036.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9983667334090577,
+      "defect_probability": 0.9983667334090577,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-037",
+      "relative_path": "images/inspection_037.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9245660328760826,
+      "defect_probability": 0.07543396712391738,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-038",
+      "relative_path": "images/inspection_038.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.999998956741959,
+      "defect_probability": 0.999998956741959,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-039",
+      "relative_path": "images/inspection_039.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999959727095381,
+      "defect_probability": 0.9999959727095381,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-040",
+      "relative_path": "images/inspection_040.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9544667690829728,
+      "defect_probability": 0.04553323091702724,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-041",
+      "relative_path": "images/inspection_041.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9739836014886768,
+      "defect_probability": 0.02601639851132316,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-042",
+      "relative_path": "images/inspection_042.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.949910517372852,
+      "defect_probability": 0.050089482627147915,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-043",
+      "relative_path": "images/inspection_043.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9758299193461888,
+      "defect_probability": 0.024170080653811203,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-044",
+      "relative_path": "images/inspection_044.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.8953914647465274,
+      "defect_probability": 0.10460853525347254,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-045",
+      "relative_path": "images/inspection_045.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999999989,
+      "defect_probability": 0.9999999999999989,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-046",
+      "relative_path": "images/inspection_046.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.95202772950338,
+      "defect_probability": 0.047972270496619986,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-047",
+      "relative_path": "images/inspection_047.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9447182106852469,
+      "defect_probability": 0.055281789314753096,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-048",
+      "relative_path": "images/inspection_048.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9979246268262906,
+      "defect_probability": 0.9979246268262906,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-049",
+      "relative_path": "images/inspection_049.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9998313735435034,
+      "defect_probability": 0.9998313735435034,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-050",
+      "relative_path": "images/inspection_050.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.7957604458490333,
+      "defect_probability": 0.20423955415096673,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-051",
+      "relative_path": "images/inspection_051.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9529061418246557,
+      "defect_probability": 0.04709385817534425,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-052",
+      "relative_path": "images/inspection_052.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9638244736434535,
+      "defect_probability": 0.03617552635654651,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-053",
+      "relative_path": "images/inspection_053.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.7990938335626515,
+      "defect_probability": 0.7990938335626515,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-054",
+      "relative_path": "images/inspection_054.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999879476,
+      "defect_probability": 0.9999999999879476,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-055",
+      "relative_path": "images/inspection_055.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9769118643322153,
+      "defect_probability": 0.023088135667784684,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-056",
+      "relative_path": "images/inspection_056.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9110213447554354,
+      "defect_probability": 0.0889786552445646,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-057",
+      "relative_path": "images/inspection_057.png",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999998646147,
+      "defect_probability": 0.9999999998646147,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-058",
+      "relative_path": "images/inspection_058.jpg",
+      "actual": "Defective",
+      "predicted": "Defective",
+      "confidence": 0.9999999999999092,
+      "defect_probability": 0.9999999999999092,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-059",
+      "relative_path": "images/inspection_059.png",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9614333785629483,
+      "defect_probability": 0.03856662143705165,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    },
+    {
+      "image_id": "R2-060",
+      "relative_path": "images/inspection_060.jpg",
+      "actual": "Normal",
+      "predicted": "Normal",
+      "confidence": 0.9048962484806126,
+      "defect_probability": 0.09510375151938741,
+      "model_version": "BIT-PLATE-CV-1.0",
+      "error": null
+    }
+  ],
+  "notes": [
+    "Labels were read only after all predictions were produced; they are never inference inputs.",
+    "The three files in Validation/ are excluded from these metrics.",
+    "Sixty synthetic, fixed-framing samples are development data, not a blind benchmark; these results cannot establish real-world reliability.",
+    "No false negatives occurred on these samples. That does not show the model never misses defects: the set is small, synthetic and from the same generator and framing as the training data."
+  ]
+}

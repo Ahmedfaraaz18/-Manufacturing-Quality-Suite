@@ -1,17 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Select a machine{% endblock %}
 {% block content %}
-<h1 class="h3 mb-1">Select a machine</h1>
-<p class="text-secondary">Answers are drawn only from the manuals of the machine you select.</p>
-<div class="row g-3 mb-4">
+<div class="page-header"><div><div class="page-eyebrow">Engineer workspace</div><h1 class="page-heading">Select a machine</h1><p class="page-subtitle">Answers are grounded only in the manuals registered for the machine you choose.</p></div><span class="badge text-bg-secondary">Evidence-controlled search</span></div>
+<div class="row g-4 mb-5">
   {% for m in machines %}
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100 shadow-sm"><div class="card-body d-flex flex-column">
-      <div class="text-secondary small">{{ m.machine_id }}</div>
-      <h2 class="h5">{{ m.model_name }}</h2>
-      <p class="mb-3">{{ m.name }}</p>
+    <div class="card machine-card"><div class="card-body d-flex flex-column">
+      <div class="machine-id">{{ m.machine_id }}</div>
+      <h2 class="machine-name">{{ m.model_name }}</h2>
+      <p class="machine-meta">{{ m.name }}</p>
       <div class="mt-auto d-flex justify-content-between align-items-center">
-        <span class="badge text-bg-light border">{{ m.manual_count }} manual{{ m.manual_count|pluralize }}</span>
+        <span class="badge text-bg-secondary">{{ m.manual_count }} manual{{ m.manual_count|pluralize }}</span>
         <a class="btn btn-primary" href="{% url 'assistant' m.machine_id %}">Ask a question</a>
       </div>
     </div></div>
@@ -21,10 +20,10 @@
   {% endfor %}
 </div>
 <div class="card">
-  <div class="card-header d-flex justify-content-between"><span class="fw-semibold">Recent questions</span><a href="{% url 'engineer-history' %}">View all</a></div>
+  <div class="card-header d-flex justify-content-between align-items-center"><div><div class="section-title">Recent questions</div><div class="section-kicker">Your latest evidence-backed requests</div></div><a class="btn btn-sm btn-outline-primary" href="{% url 'engineer-history' %}">View all</a></div>
   <ul class="list-group list-group-flush">
     {% for q in recent %}
-    <li class="list-group-item d-flex justify-content-between gap-3">
+    <li class="list-group-item d-flex justify-content-between align-items-center gap-3 py-3">
       <span><span class="text-secondary small">{{ q.machine.machine_id }}</span> {{ q.question|truncatechars:90 }}</span>
       <span class="badge {% if q.status == 'answered' %}text-bg-success{% elif q.status == 'insufficient_evidence' %}text-bg-warning{% else %}text-bg-danger{% endif %}">{{ q.get_status_display }}</span>
     </li>

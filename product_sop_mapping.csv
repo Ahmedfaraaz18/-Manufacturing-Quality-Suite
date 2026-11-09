@@ -1,0 +1,4 @@
+product_id,product_name,document_id,revision,pdf_filename,required
+P-PLATE01,Demonstration metal plate,Q-PLATE-01,1.0,Q_PLATE_01_Containment_Rev1_0.pdf,true
+P-PLATE01,Demonstration metal plate,Q-PLATE-02,1.0,Q_PLATE_02_Review_Rev1_0.pdf,true
+P-GASKET02,Demonstration sealing gasket,Q-GASKET-01,1.0,Q_GASKET_01_Review_Rev1_0.pdf,true

@@ -1,0 +1,14 @@
+ROUND 3 STUDENT PACK
+1. Read Round3_Student_Challenge_Brief.pdf. An editable Word copy is included.
+2. Reuse the Round 1 RAG pipeline and your saved Round 2 inspections, users, and product P-PLATE01.
+3. Index the PDFs in SOPs as quality references, preserving document ID, revision, product ID, and one-based PDF page.
+4. Load product_sop_mapping.csv. pdf_filename is relative to SOPs. One product can map to multiple SOPs. required=true means that document must be available for the complete procedure.
+5. Both plate SOPs apply together. The gasket SOP is unrelated to plate inspections and is included for source-isolation checks.
+6. Do not index this brief, mapping CSV, or START_HERE as procedural evidence. Do not use Round 1 equipment manuals for quality actions.
+7. Use original completed Defective predictions for incident eligibility. Keep human corrections visible and separate. Normal results must not create incidents.
+8. Keep one incident per inspection, including repeated requests. Missing evidence requires manual review without invented actions.
+9. Development: Day 2, 12:30 PM to 2:30 PM. Evaluation: 2:30 PM to 3:30 PM. Round 3 scores determine the final winners.
+10. Each SOP has two pages. PDF page numbers and printed page labels match.
+11. This pack contains no new model, credentials, completed application code, or judge answer key.
+12. All procedures and products are fictional training material; do not use them for real operations.
+Version 1.0 | Prepared by Blessed IT Solution Pvt Ltd

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New inspection{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-eyebrow">Visual inspection</div><h1 class="page-heading">New inspection</h1>
+    <p class="page-subtitle">Upload a JPG or PNG of the product. The supplied classifier labels it Normal or Defective; supervisors verify results.</p></div>
+  <a class="btn btn-outline-secondary" href="{% url 'inspection-history' %}">My inspections</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Total</div><div class="metric-value">{{ stats.total }}</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Completed</div><div class="metric-value">{{ stats.completed }}</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Processing / queued</div><div class="metric-value">{{ stats.processing }} / {{ stats.queued }}</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Failed</div><div class="metric-value">{{ stats.failed }}</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Normal / defective</div><div class="metric-value">{{ stats.normal }} / {{ stats.defective }}</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card metric-card-eligible"><div class="card-body"><div class="metric-label">Incident eligible</div><div class="metric-value">{{ stats.incident_eligible }}</div><div class="metric-note">Completed · original Defective</div></div></div></div>
+  <div class="col-6 col-md-4 col-xl"><div class="card metric-card"><div class="card-body"><div class="metric-label">Open incidents</div><div class="metric-value">{{ stats.pending_incidents }}</div><div class="metric-note"><a href="{% url 'quality-incident-list' %}">View your incident register</a></div></div></div></div>
+</div>
+
+{% if not products %}
+<div class="card"><div class="card-body empty-state"><div class="es-title">No product is registered yet</div>Ask an administrator to register product P-PLATE01 before uploading images.</div></div>
+{% else %}
+<div class="row g-4" id="upload-app"
+     data-single-url="{% url 'api-inspection-upload' %}" data-batch-url="{% url 'api-inspection-batch' %}"
+     data-inspection-api="{% url 'api-inspections' %}" data-batch-api="/api/batches/">
+  <div class="col-xl-5">
+    <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-pills gap-2" id="mode-tabs" role="tablist">
+          <li class="nav-item"><button class="btn btn-sm btn-primary" type="button" data-mode="single">Single image</button></li>
+          <li class="nav-item"><button class="btn btn-sm btn-outline-primary" type="button" data-mode="batch">Batch (up to 10)</button></li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <form id="upload-form" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="product">Product</label>
+            <select class="form-select" id="product" name="product" required>
+              {% for p in products %}<option value="{{ p.product_id }}">{{ p.product_id }} – {{ p.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <label class="dropzone mb-3" id="dropzone" for="file-input">
+            <span class="dz-icon" aria-hidden="true">+</span>
+            <div class="dz-title" id="dz-title">Choose an image or drop it here</div>
+            <div class="dz-hint">JPEG or PNG · up to 5 MiB · 64–4096 px per side</div>
+            <input type="file" id="file-input" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+          </label>
+          <div id="file-list" class="mb-3" aria-live="polite"></div>
+          <div id="preview-wrap" class="mb-3 d-none"><img id="preview" class="preview-img" alt="Selected image preview"></div>
+          <div id="form-error" class="alert alert-danger d-none" role="alert"></div>
+          <div id="progress-wrap" class="mb-3 d-none">
+            <div class="d-flex justify-content-between small text-secondary mb-1"><span id="progress-label">Uploading…</span><span id="progress-pct">0%</span></div>
+            <div class="meter"><span id="progress-bar" style="width:0%"></span></div>
+          </div>
+          <button class="btn btn-primary w-100" type="submit" id="submit-btn" disabled>Run inspection</button>
+          <p class="disclaimer mt-3 mb-0">Educational demonstration with synthetic metal-plate images. Not a real factory inspection system.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-7">
+    <div id="result-area" aria-live="polite">
+      <div class="card"><div class="card-body empty-state"><div class="es-title">No inspection yet</div>Your result, status and confidence will appear here.</div></div>
+    </div>
+    {% if recent %}
+    <div class="card mt-4">
+      <div class="card-header d-flex justify-content-between"><span class="section-title">Recent inspections</span><a href="{% url 'inspection-history' %}">View all</a></div>
+      <ul class="list-group list-group-flush">
+        {% for i in recent %}
+        <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+          <span class="recent-inspection-main"><a class="row-link text-truncate" href="{% url 'inspection-detail' i.pk %}">#{{ i.pk }} · {{ i.original_filename }}</a>
+          {% if i.status == 'completed' and i.predicted_class == 'Defective' %}<small class="recent-eligibility">{% if i.incident %}Incident #{{ i.incident.pk }} saved{% else %}Eligible · create from inspection details{% endif %}</small>{% elif i.status == 'completed' %}<small class="recent-ineligible">Not eligible for incident creation · original result {{ i.predicted_class }}</small>{% endif %}</span>
+          <span class="d-flex gap-2 flex-shrink-0">
+            <span class="chip chip-{{ i.status }}">{{ i.get_status_display }}</span>
+            {% if i.predicted_class %}<span class="chip chip-{{ i.predicted_class|lower }}">{{ i.predicted_class }}</span>{% endif %}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script src="{% static 'inspections/js/inspect-common.js' %}"></script>
+<script src="{% static 'inspections/js/upload.js' %}"></script>
+{% endblock %}

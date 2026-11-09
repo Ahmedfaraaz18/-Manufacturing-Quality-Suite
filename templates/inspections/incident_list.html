@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Quality incidents{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Quality operations</div>
+    <h1 class="page-heading">Quality incidents</h1>
+    <p class="page-subtitle">{% if user.role == 'engineer' %}Your incidents linked to eligible original Defective inspections.{% elif user.role == 'supervisor' %}Review mapped SOP evidence and record a follow-up decision.{% else %}Read-only incident records across inspections.{% endif %}</p>
+  </div>
+  {% if user.role == 'engineer' %}<a class="btn btn-primary" href="{% url 'inspection-history' %}">Open inspection history</a>{% endif %}
+</div>
+
+{% if incident_stats %}
+<div class="row g-3 mb-4" aria-label="Quality incident summary">
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Total incidents</div><div class="metric-value">{{ incident_stats.total }}</div><div class="metric-note">All submitted incidents</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Pending review</div><div class="metric-value">{{ incident_stats.pending }}</div><div class="metric-note">Prioritized at the top of the queue</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Sufficient evidence</div><div class="metric-value">{{ incident_stats.sufficient }}</div><div class="metric-note">Mapped SOP support verified</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Manual review required</div><div class="metric-value">{{ incident_stats.insufficient }}</div><div class="metric-note">Evidence gaps recorded</div></div></div></div>
+</div>
+{% endif %}
+
+<form class="card card-body filter-bar mb-3" method="get" role="search">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-5 col-xl-6"><label class="form-label" for="incident-search">Search incidents</label>
+      <input class="form-control" id="incident-search" type="search" name="q" value="{{ filters.q }}" placeholder="Incident, inspection, product or creator"></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="evidence-filter">Evidence</label>
+      <select class="form-select" id="evidence-filter" name="evidence"><option value="">All evidence states</option><option value="sufficient" {% if filters.evidence == 'sufficient' %}selected{% endif %}>Sufficient</option><option value="insufficient" {% if filters.evidence == 'insufficient' %}selected{% endif %}>Insufficient</option></select></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="review-filter">Review</label>
+      <select class="form-select" id="review-filter" name="review"><option value="">All review states</option><option value="pending" {% if filters.review == 'pending' %}selected{% endif %}>Pending review</option><option value="approved" {% if filters.review == 'approved' %}selected{% endif %}>Approved for follow-up</option><option value="needs_info" {% if filters.review == 'needs_info' %}selected{% endif %}>Needs more information</option></select></div>
+    <div class="col-12 col-md-1 d-flex gap-2"><button class="btn btn-primary flex-grow-1" type="submit">Filter</button></div>
+    {% if filters.q or filters.evidence or filters.review %}<div class="col-12"><a class="small" href="{% url 'quality-incident-list' %}">Clear filters</a></div>{% endif %}
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <caption class="visually-hidden">Quality incidents{% if user.role == 'supervisor' %}, pending reviews appear first{% endif %}</caption>
+      <thead><tr><th>Incident</th><th>Inspection</th><th>Product</th>{% if user.role == 'supervisor' %}<th>Engineer</th>{% endif %}<th>Evidence</th><th>Review</th><th>Created</th><th></th></tr></thead>
+      <tbody>
+      {% for incident in page %}
+        <tr>
+          <td class="fw-semibold"><a class="row-link" href="{% url 'quality-incident-detail' incident.pk %}">#{{ incident.pk }}</a></td>
+          <td><a href="{% url 'inspection-detail' incident.inspection_id %}">#{{ incident.inspection_id }}</a><div class="small text-secondary">{{ incident.original_predicted_class }} · {{ incident.original_model_version }}</div></td>
+          <td>{{ incident.product_id }}</td>
+          {% if user.role == 'supervisor' %}<td>{{ incident.inspection.submitting_user.username }}</td>{% endif %}
+          <td><span class="status-badge status-{% if incident.evidence_status == 'sufficient' %}sufficient{% else %}insufficient{% endif %}">{{ incident.get_evidence_status_display }}</span></td>
+          <td><span class="status-badge status-review-{{ incident.review_status }}">{{ incident.get_review_status_display }}</span></td>
+          <td class="small text-nowrap">{{ incident.created_at|date:"Y-m-d H:i" }} UTC</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'quality-incident-detail' incident.pk %}">{% if user.role == 'supervisor' and incident.review_status == 'pending' %}Review{% else %}Open{% endif %}</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="{% if user.role == 'supervisor' %}8{% else %}7{% endif %}"><div class="empty-state"><div class="empty-state-mark" aria-hidden="true">QI</div><div class="es-title">{% if filters.q or filters.evidence or filters.review %}No incidents match these filters{% else %}No quality incidents yet{% endif %}</div>{% if filters.q or filters.evidence or filters.review %}Adjust or clear the filters to see more incidents.{% elif user.role == 'engineer' %}Create one from a completed inspection with an original Defective prediction in your inspection history.{% elif user.role == 'supervisor' %}Incidents submitted by Engineers will appear here for review.{% else %}No incident records are available.{% endif %}</div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if page.paginator.num_pages > 1 %}
+<nav class="mt-3 d-flex align-items-center gap-2" aria-label="Pagination">
+  {% if page.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?q={{ filters.q|urlencode }}&amp;evidence={{ filters.evidence|urlencode }}&amp;review={{ filters.review|urlencode }}&amp;page={{ page.previous_page_number }}">Previous</a>{% endif %}
+  <span class="small">Page {{ page.number }} of {{ page.paginator.num_pages }} · {{ page.paginator.count }} incident(s)</span>
+  {% if page.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?q={{ filters.q|urlencode }}&amp;evidence={{ filters.evidence|urlencode }}&amp;review={{ filters.review|urlencode }}&amp;page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+
+{% if user.role == 'supervisor' %}
+<section class="card mt-4">
+  <div class="card-header d-flex justify-content-between align-items-center gap-3"><div><div class="section-title">Recently reviewed</div><div class="section-kicker">Latest saved Supervisor decisions</div></div><span class="status-badge status-review-approved">Review history</span></div>
+  <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Incident</th><th>Decision</th><th>Reviewer</th><th>Reviewed</th><th></th></tr></thead><tbody>
+    {% for incident in recently_reviewed %}
+      <tr><td><a href="{% url 'quality-incident-detail' incident.pk %}">#{{ incident.pk }}</a><div class="small text-secondary">{{ incident.product_id }} · Inspection #{{ incident.inspection_id }}</div></td><td><span class="status-badge status-review-{{ incident.review_status }}">{{ incident.get_review_status_display }}</span></td><td>{{ incident.reviewed_by.username }}</td><td class="small">{{ incident.reviewed_at|date:"Y-m-d H:i" }} UTC</td><td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{% url 'quality-incident-detail' incident.pk %}">View</a></td></tr>
+    {% empty %}<tr><td colspan="5"><div class="empty-state py-4"><div class="es-title">No review decisions yet</div>Saved incident reviews will appear here.</div></td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endif %}
+{% endblock %}

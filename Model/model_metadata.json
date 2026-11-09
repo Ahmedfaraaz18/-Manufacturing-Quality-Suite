@@ -1,0 +1,14 @@
+{
+  "model_version": "BIT-PLATE-CV-1.0",
+  "product_id": "P-PLATE01",
+  "classes": {
+    "0": "Normal",
+    "1": "Defective"
+  },
+  "decision_threshold": 0.5,
+  "input": "RGB image; exact pipeline in inference.py",
+  "training": "1200 procedurally generated images, balanced classes; seed range 10000-11199",
+  "sample_set": "60 independently generated labeled images, 30 per class; seeds 90000-90059",
+  "architecture": "Standardized 17-dimensional image features and logistic regression",
+  "limitations": "Synthetic, fixed framing only. Uncalibrated scores. No real factory validity."
+}

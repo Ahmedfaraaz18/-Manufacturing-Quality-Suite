@@ -1,0 +1,11 @@
+ROUND 2 STUDENT PACK
+1. Read Round2_Student_Challenge_Brief.pdf. Editable Word copies of both documents are included.
+2. Read Round2_Model_and_Data_Guide.pdf and register product P-PLATE01.
+3. Use Model/inference.py and classifier.npz for real image inference. No training or paid API is required.
+4. Samples contains 60 labeled synthetic images. Labels are for metrics only.
+5. Validation contains intentionally invalid inputs; exclude them from model metrics.
+6. Implement the web application, role checks, upload validation, storage, Celery and Redis batch processing, and supervisor reviews.
+7. Submit at 7:00 AM on Day 2. Evaluation runs 7:45 AM to 11:15 AM. All 70 teams participate; the combined Round 1 and Round 2 score determines the top 21.
+8. Development is independent. Follow the college policy for AI coding assistants and reused code.
+9. The dataset and model are educational demonstrations, not real factory inspection tools.
+Pack version 1.0 | Prepared by Blessed IT Solution Pvt Ltd

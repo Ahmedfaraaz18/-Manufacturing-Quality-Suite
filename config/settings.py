@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'assistant.apps.AssistantConfig',
+    'inspections.apps.InspectionsConfig',
 ]
 
 AUTH_USER_MODEL = 'assistant.User'
@@ -85,17 +86,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'hackathon_db'),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+#
+# PostgreSQL remains the normal deployment database.  Setting USE_SQLITE_DEV=1
+# provides a zero-setup local option when PostgreSQL is unavailable.
+if env_bool('USE_SQLITE_DEV', False):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'hackathon_db'),
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 
 
 # Password validation
@@ -136,7 +147,7 @@ STATIC_URL = 'static/'
 
 
 # Uploaded manuals are private: served only through authenticated views, never via a public MEDIA_URL.
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get('MEDIA_ROOT', BASE_DIR / 'media'))
 MAX_UPLOAD_SIZE_MB = int(os.environ.get('MAX_UPLOAD_SIZE_MB', '20'))
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
@@ -145,7 +156,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'inspections-home'
 LOGOUT_REDIRECT_URL = 'login'
 
 SESSION_COOKIE_HTTPONLY = True
@@ -187,6 +198,26 @@ MAX_QUESTION_LENGTH = 1000
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
 INGEST_ASYNC = env_bool('INGEST_ASYNC', False)
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+# Task outcomes live in the database, so no Celery result backend is consulted when publishing.
+CELERY_TASK_IGNORE_RESULT = True
+# Fail fast when Redis is down so an upload request is not blocked for long.
+CELERY_BROKER_TRANSPORT_OPTIONS = {'socket_connect_timeout': 3}
+CELERY_TASK_PUBLISH_RETRY_POLICY = {'max_retries': 1, 'interval_start': 0, 'interval_step': 0.2, 'interval_max': 0.5}
+
+
+# Round 2: AI visual quality inspection.  The verified organizer assets live at
+# the repository root (Model/, Samples/, Validation/); ROUND2_PACK_DIR remains
+# an explicit deployment override only.
+ROUND2_PACK_DIR = Path(os.environ.get('ROUND2_PACK_DIR', BASE_DIR))
+INSPECTION_PRODUCT_ID = 'P-PLATE01'
+INSPECTION_MAX_FILE_BYTES = 5 * 1024 * 1024
+INSPECTION_MIN_DIMENSION = 64
+INSPECTION_MAX_DIMENSION = 4096
+INSPECTION_MAX_BATCH_FILES = 10
+INSPECTION_VERIFY_MODEL_CHECKSUMS = env_bool('INSPECTION_VERIFY_MODEL_CHECKSUMS', True)
 
 
 # Email

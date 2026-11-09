@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-eyebrow">{% if show_user %}Supervisor{% else %}Visual inspection{% endif %}</div><h1 class="page-heading">{{ title }}</h1><p class="page-subtitle">{{ subtitle }}</p></div>
+  {% if not show_user %}<a class="btn btn-primary" href="{% url 'inspection-upload' %}">New inspection</a>{% endif %}
+</div>
+
+{% if stats %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Total inspections</div><div class="metric-value">{{ stats.total }}</div><div class="metric-note">{{ stats.active }} in progress</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Awaiting review</div><div class="metric-value">{{ stats.awaiting_review }}</div><div class="metric-note">{{ stats.reviewed }} reviewed · {{ stats.corrected }} corrected</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Predicted defective</div><div class="metric-value">{{ stats.defective }}</div><div class="metric-note">{{ stats.normal }} predicted normal</div></div></div></div>
+  <div class="col-6 col-xl-3"><div class="card metric-card"><div class="card-body"><div class="metric-label">Failed items</div><div class="metric-value">{{ stats.failed }}</div><div class="metric-note">Rejected or not classified</div></div></div></div>
+</div>
+{% endif %}
+
+<form class="card card-body mb-3 filter-bar" method="get">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4 col-xl-3"><label class="form-label" for="f-q">Search</label>
+      <input class="form-control" id="f-q" name="q" value="{{ filters.q }}" placeholder="File name{% if show_user %}, user{% endif %}, or ID"></div>
+    <div class="col-6 col-md-4 col-xl-2"><label class="form-label" for="f-class">Prediction</label>
+      <select class="form-select" id="f-class" name="predicted_class"><option value="">All</option>
+        {% for value, label in classes %}<option value="{{ value }}" {% if filters.predicted_class == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-6 col-md-4 col-xl-2"><label class="form-label" for="f-status">Status</label>
+      <select class="form-select" id="f-status" name="status"><option value="">All</option>
+        {% for value, label in statuses %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-6 col-md-4 col-xl-2"><label class="form-label" for="f-reviewed">Review</label>
+      <select class="form-select" id="f-reviewed" name="reviewed"><option value="">All</option>
+        <option value="yes" {% if filters.reviewed == 'yes' %}selected{% endif %}>Reviewed</option>
+        <option value="no" {% if filters.reviewed == 'no' %}selected{% endif %}>Not reviewed</option></select></div>
+    <div class="col-6 col-md-4 col-xl-3"><label class="form-label" for="f-from">Submitted between</label>
+      <div class="input-group"><input class="form-control" type="date" id="f-from" name="date_from" value="{{ filters.date_from }}" aria-label="From date"><input class="form-control" type="date" name="date_to" value="{{ filters.date_to }}" aria-label="To date"></div></div>
+    <div class="col-12 d-flex gap-2 mt-2"><button class="btn btn-primary" type="submit">Apply filters</button><a class="btn btn-outline-secondary" href="?">Reset</a></div>
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Image</th><th>Record</th>{% if show_user %}<th>Submitted by</th>{% endif %}<th>Status</th><th>Prediction</th><th>Confidence</th><th>Review</th>{% if not show_user %}<th>Quality incident</th>{% endif %}<th>Submitted</th><th></th></tr></thead>
+      <tbody>
+      {% for i in page %}
+        <tr>
+          <td style="width:84px">{% if i.image %}<img class="thumb" loading="lazy" src="{% url 'inspection-image' i.pk %}" alt="Inspection {{ i.pk }} thumbnail">{% else %}<div class="thumb d-grid text-secondary small" style="place-items:center;background:#eef2f7">–</div>{% endif %}</td>
+          <td><a class="row-link fw-semibold" href="{% url 'inspection-detail' i.pk %}">#{{ i.pk }}</a><div class="small text-secondary text-break" style="max-width:220px">{{ i.original_filename }}</div></td>
+          {% if show_user %}<td>{{ i.submitting_user.username }}</td>{% endif %}
+          <td><span class="chip chip-{{ i.status }}">{{ i.get_status_display }}</span>{% if i.status == 'failed' %}<div class="small text-danger mt-1" style="max-width:240px">{{ i.failure_reason }}</div>{% endif %}</td>
+          <td>{% if i.predicted_class %}<span class="chip chip-{{ i.predicted_class|lower }}">{{ i.predicted_class }}</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+          <td>{% if i.confidence is not None %}{{ i.confidence_percent|floatformat:2 }}%{% else %}—{% endif %}</td>
+          <td>{% if i.review %}<span class="chip chip-reviewed">{{ i.review.reviewed_class }}</span>{% elif i.status == 'completed' %}<span class="chip chip-pending">Pending</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+          {% if not show_user %}<td>
+            {% if i.incident %}<a class="status-badge status-review-{{ i.incident.review_status }}" href="{% url 'quality-incident-detail' i.incident.pk %}">Incident #{{ i.incident.pk }}</a>
+            {% elif i.status == 'completed' and i.predicted_class == 'Defective' %}<span class="status-badge status-sufficient">Eligible</span>
+            {% elif i.status == 'completed' %}<span class="small text-secondary" title="Only original Defective results are eligible">Not eligible</span>
+            {% else %}<span class="small text-secondary">—</span>{% endif %}
+          </td>{% endif %}
+          <td class="text-nowrap small">{{ i.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'inspection-detail' i.pk %}">{% if show_user and i.status == 'completed' and not i.review %}Review{% else %}Open{% endif %}</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="{% if show_user %}9{% else %}10{% endif %}"><div class="empty-state"><div class="empty-state-mark" aria-hidden="true">IN</div><div class="es-title">No inspections match</div>{% if filters.q or filters.status or filters.predicted_class or filters.reviewed or filters.date_from or filters.date_to %}Try clearing some filters.{% elif show_user %}Inspections submitted by engineers will appear here.{% else %}Upload an image to create your first inspection.{% endif %}</div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if page.paginator.num_pages > 1 %}
+<nav class="mt-3 d-flex align-items-center gap-2" aria-label="Pagination">
+  {% if page.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+  <span class="small">Page {{ page.number }} of {{ page.paginator.num_pages }} · {{ page.paginator.count }} record(s)</span>
+  {% if page.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

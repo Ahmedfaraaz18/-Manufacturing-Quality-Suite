@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block title %}Inspection #{{ inspection.pk }}{% endblock %}
+{% block content %}
+<div class="page-header inspection-detail-header">
+  <nav class="inspection-detail-breadcrumb" aria-label="Breadcrumb">
+    {% if user.role == 'supervisor' %}
+      <a href="{% url 'inspection-supervisor' %}">Inspection reviews</a>
+    {% elif user.role == 'engineer' %}
+      <a href="{% url 'inspection-history' %}">My inspections</a>
+    {% else %}
+      <a href="{% url 'inspection-admin' %}">Inspection overview</a>
+    {% endif %}
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">Inspection #{{ inspection.pk }}</span>
+  </nav>
+  <div class="inspection-detail-heading-row">
+    <div class="inspection-detail-title">
+      <h1 class="page-heading">Inspection #{{ inspection.pk }}</h1>
+      <p class="page-subtitle text-break">{{ inspection.original_filename }} · {{ inspection.product.product_id }}</p>
+    </div>
+    <div class="inspection-detail-actions">
+      <a class="btn btn-outline-secondary" href="{% url 'inspection-batch' inspection.batch_id %}">Batch #{{ inspection.batch_id }}</a>
+      {% if user.role == 'supervisor' %}<a class="btn btn-outline-secondary" href="{% url 'inspection-supervisor' %}">Review queue</a>
+      {% elif user.role == 'engineer' %}<a class="btn btn-outline-secondary" href="{% url 'inspection-history' %}">My inspections</a>
+      {% else %}<a class="btn btn-outline-secondary" href="{% url 'inspection-admin' %}">Overview</a>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4" id="detail-app" data-api-url="{% url 'api-inspection-detail' inspection.pk %}" data-finished="{{ inspection.is_finished|yesno:'1,0' }}">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-body">
+      {% if inspection.image %}<img class="preview-img" src="{% url 'inspection-image' inspection.pk %}" alt="Inspected image for record {{ inspection.pk }}">
+      {% else %}<div class="empty-state"><div class="es-title">No image stored</div>Rejected files are not kept.</div>{% endif %}
+      {% if inspection.image %}<dl class="kv mt-3">
+        <dt>Format</dt><dd>{{ inspection.image_format }}</dd>
+        <dt>Dimensions</dt><dd>{{ inspection.image_width }} × {{ inspection.image_height }} px</dd>
+        <dt>File size</dt><dd>{{ inspection.file_size|filesizeformat }}</dd>
+      </dl>{% endif %}
+    </div></div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card result-card {% if inspection.predicted_class %}is-{{ inspection.predicted_class|lower }}{% endif %} mb-4"><div class="card-body">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <div><div class="page-eyebrow">Original model output</div>
+          {% if inspection.status == 'completed' %}<div class="result-class is-{{ inspection.predicted_class|lower }}">{{ inspection.predicted_class }}</div>
+          {% elif inspection.status == 'failed' %}<div class="result-class">Not inspected</div>
+          {% else %}<div class="result-class">Inspecting…</div>{% endif %}</div>
+        <span class="chip chip-{{ inspection.status }}" id="status-chip">{{ inspection.get_status_display }}</span>
+      </div>
+      {% if inspection.status == 'completed' %}
+        <a class="btn btn-primary mb-3" href="{% url 'inspection-pdf-report' inspection.pk %}">Download PDF Report</a>
+        <div class="meter mb-3"><span style="width:{{ inspection.confidence_percent|stringformat:'.1f' }}%"></span></div>
+        <dl class="kv">
+          <dt>Predicted class</dt><dd>{{ inspection.predicted_class }}</dd>
+          <dt>Confidence</dt><dd>{{ inspection.confidence_percent|floatformat:2 }}% <span class="text-secondary">(probability of the predicted class)</span></dd>
+          <dt>Defect probability</dt><dd>{{ inspection.defect_probability_percent|floatformat:2 }}% <span class="text-secondary">· raw {{ inspection.defect_probability|stringformat:".6f" }}</span></dd>
+          <dt>Model version</dt><dd>{{ inspection.model_version }}</dd>
+          <dt>Inspected at</dt><dd>{{ inspection.completed_at|date:"Y-m-d H:i:s" }} UTC</dd>
+        </dl>
+        <p class="disclaimer mt-3 mb-0">Uncalibrated score from a model trained on synthetic images; not a verified probability of product safety. The original output is never changed by a review.</p>
+      {% elif inspection.status == 'failed' %}
+        <div class="alert alert-danger mb-0" role="alert"><strong>This image was not classified.</strong> {{ inspection.failure_reason }}</div>
+      {% else %}
+        <p class="text-secondary mb-0" id="pending-note">This record is {{ inspection.get_status_display|lower }}; the page refreshes when the worker finishes.</p>
+      {% endif %}
+    </div></div>
+
+    {% if user.role == 'engineer' %}
+    <section class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center gap-2">
+        <div><div class="section-title">Quality incident</div><div class="section-kicker">Round 3 · original prediction determines eligibility</div></div>
+        {% if quality_incident %}<span class="badge text-bg-success">Incident saved</span>{% elif incident_eligible %}<span class="badge text-bg-success">Eligible</span>{% else %}<span class="badge text-bg-secondary">Ineligible</span>{% endif %}
+      </div>
+      <div class="card-body">
+        {% if quality_incident %}
+          <p class="mb-3">Incident #{{ quality_incident.pk }} is linked to this inspection. Its saved recommendations and Supervisor review are preserved.</p>
+          <a class="btn btn-primary" href="{% url 'quality-incident-detail' quality_incident.pk %}">View existing incident</a>
+        {% elif incident_eligible %}
+          <dl class="kv mb-3">
+            <dt>Inspection reference</dt><dd>#{{ inspection.pk }}</dd>
+            <dt>Product ID</dt><dd>{{ inspection.product.product_id }}</dd>
+            <dt>Original prediction</dt><dd><span class="chip chip-defective">{{ inspection.predicted_class }}</span></dd>
+            <dt>Model version</dt><dd>{{ inspection.model_version }}</dd>
+            <dt>Confidence</dt><dd>{{ inspection.confidence_percent|floatformat:2 }}%</dd>
+            <dt>Defect probability</dt><dd>{{ inspection.defect_probability_percent|floatformat:2 }}%</dd>
+            <dt>Inspection time</dt><dd>{{ inspection.completed_at|date:"Y-m-d H:i:s" }} UTC</dd>
+          </dl>
+          <p class="small text-secondary">A separate human correction, if present, does not change eligibility or the original model result.</p>
+          <form method="post" action="{% url 'quality-incident-create' inspection.pk %}" data-incident-form>
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Create Quality Incident</button>
+          </form>
+        {% else %}
+          <p class="mb-0">{{ incident_eligibility_reason }}</p>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="card mb-4"><div class="card-header"><div class="section-title">Supervisor review</div><div class="section-kicker">Stored separately from the model output</div></div>
+      <div class="card-body">
+      {% if review %}
+        <div class="compare mb-3">
+          <div class="panel"><h3>Original prediction</h3><span class="chip chip-{{ review.original_predicted_class|lower }}">{{ review.original_predicted_class }}</span></div>
+          <div class="panel"><h3>Reviewed prediction</h3><span class="chip chip-{{ review.reviewed_class|lower }}">{{ review.reviewed_class }}</span>
+            <span class="small text-secondary ms-1">{% if review.is_correction %}corrected{% else %}confirmed{% endif %}</span></div>
+        </div>
+        <dl class="kv">
+          <dt>Reviewed by</dt><dd>{{ review.reviewer.username }} ({{ review.reviewer.get_role_display }})</dd>
+          <dt>Review date</dt><dd>{{ review.reviewed_at|date:"Y-m-d H:i:s" }} UTC</dd>
+          <dt>Comment</dt><dd>{% if review.comment %}{{ review.comment|linebreaksbr }}{% else %}<span class="text-secondary">No comment</span>{% endif %}</dd>
+        </dl>
+      {% elif can_review %}
+        <form method="post" action="{% url 'inspection-review-form' inspection.pk %}" id="review-form">
+          {% csrf_token %}
+          <p class="mb-3">The model predicted <strong>{{ inspection.predicted_class }}</strong> with {{ inspection.confidence_percent|floatformat:2 }}% confidence. Confirm it, or correct it if the image shows otherwise.</p>
+          <div class="mb-3"><label class="form-label" for="comment">Comment (optional)</label>
+            <textarea class="form-control" id="comment" name="comment" rows="3" maxlength="1000" placeholder="Why was the prediction confirmed or corrected?"></textarea></div>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary" type="submit" name="reviewed_class" value="{{ inspection.predicted_class }}">Confirm: {{ inspection.predicted_class }}</button>
+            <button class="btn btn-outline-danger" type="submit" name="reviewed_class" value="{% if inspection.predicted_class == 'Defective' %}Normal{% else %}Defective{% endif %}">Correct to {% if inspection.predicted_class == 'Defective' %}Normal{% else %}Defective{% endif %}</button>
+          </div>
+        </form>
+      {% elif inspection.status == 'completed' %}
+        <p class="text-secondary mb-0">{% if user.role == 'supervisor' %}Reviewed.{% else %}Awaiting supervisor review. Only supervisors can confirm or correct a prediction.{% endif %}</p>
+      {% else %}
+        <p class="text-secondary mb-0">Only completed inspections can be reviewed.</p>
+      {% endif %}
+      </div></div>
+
+    {% if user.role != 'engineer' %}
+    <div class="card mb-4"><div class="card-header"><div class="section-title">Corrective action</div><div class="section-kicker">Supervisor-managed follow-up; separate from the AI result and review decision</div></div><div class="card-body">
+      {% if corrective_action %}
+        <dl class="kv mb-3"><dt>Observed issue</dt><dd>{{ corrective_action.observed_issue|linebreaksbr }}</dd><dt>Recommended action</dt><dd>{{ corrective_action.recommended_action|linebreaksbr }}</dd><dt>Action status</dt><dd><span class="chip chip-{% if corrective_action.status == 'completed' %}completed{% elif corrective_action.status == 'in_progress' %}processing{% else %}pending{% endif %}">{{ corrective_action.get_status_display }}</span></dd><dt>Last updated</dt><dd>{{ corrective_action.updated_at|date:"Y-m-d H:i:s" }} UTC by {{ corrective_action.updated_by.username }}</dd></dl>
+      {% endif %}
+      {% if can_manage_corrective_action %}
+      <form method="post" action="{% url 'inspection-corrective-action' inspection.pk %}">
+        {% csrf_token %}
+        <div class="mb-3"><label class="form-label" for="observed_issue">Observed issue</label><textarea class="form-control" id="observed_issue" name="observed_issue" rows="3" maxlength="1000" required>{% if corrective_action %}{{ corrective_action.observed_issue }}{% endif %}</textarea></div>
+        <div class="mb-3"><label class="form-label" for="recommended_action">Recommended corrective action</label><textarea class="form-control" id="recommended_action" name="recommended_action" rows="3" maxlength="1000" required>{% if corrective_action %}{{ corrective_action.recommended_action }}{% endif %}</textarea></div>
+        <div class="d-flex align-items-end gap-3 flex-wrap"><div><label class="form-label" for="action_status">Action status</label><select class="form-select" id="action_status" name="status">{% for value, label in corrective_action_statuses %}<option value="{{ value }}" {% if corrective_action and corrective_action.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button class="btn btn-primary" type="submit">{% if corrective_action %}Update corrective action{% else %}Save corrective action{% endif %}</button></div>
+      </form>
+      {% elif not corrective_action %}
+        <p class="text-secondary mb-0">{% if review %}No corrective action has been recorded.{% else %}A supervisor review is required before corrective action can be recorded.{% endif %}</p>
+      {% endif %}
+    </div></div>
+    {% endif %}
+
+    <div class="card"><div class="card-header"><div class="section-title">Record details</div></div><div class="card-body">
+      <dl class="kv">
+        <dt>Product</dt><dd>{{ inspection.product.product_id }} – {{ inspection.product.name }}</dd>
+        <dt>Submitted by</dt><dd>{{ inspection.submitting_user.username }}</dd>
+        <dt>Submitted</dt><dd>{{ inspection.created_at|date:"Y-m-d H:i:s" }} UTC</dd>
+        <dt>Batch</dt><dd><a href="{% url 'inspection-batch' inspection.batch_id %}">#{{ inspection.batch_id }}</a></dd>
+      </dl>
+    </div></div>
+    <div class="card mt-4"><div class="card-header"><div class="section-title">Inspection decision timeline</div><div class="section-kicker">Stored traceability events only</div></div><div class="card-body"><ol class="decision-timeline mb-0">
+      <li><strong>Image submitted</strong><span>{{ inspection.created_at|date:"Y-m-d H:i:s" }} UTC</span></li>
+      <li><strong>Image validation</strong><span>Completed during submission; a separate validation timestamp is not stored.</span></li>
+      {% if inspection.started_at %}<li><strong>Processing started</strong><span>{{ inspection.started_at|date:"Y-m-d H:i:s" }} UTC</span></li>{% endif %}
+      {% if inspection.completed_at and inspection.predicted_class %}<li><strong>AI prediction generated</strong><span>{{ inspection.predicted_class }} recorded {{ inspection.completed_at|date:"Y-m-d H:i:s" }} UTC</span></li><li><strong>Inspection completed</strong><span>{{ inspection.completed_at|date:"Y-m-d H:i:s" }} UTC</span></li>{% elif inspection.status == 'failed' %}<li><strong>Inspection failed</strong><span>{{ inspection.completed_at|date:"Y-m-d H:i:s" }} UTC{% if inspection.failure_reason %}: {{ inspection.failure_reason }}{% endif %}</span></li>{% endif %}
+      {% if review %}<li><strong>Supervisor review submitted</strong><span>{{ review.reviewed_at|date:"Y-m-d H:i:s" }} UTC by {{ review.reviewer.username }}</span></li><li><strong>Final reviewed decision</strong><span>{{ review.reviewed_class }} (original AI prediction: {{ review.original_predicted_class }})</span></li>{% endif %}
+    </ol></div></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script>
+/* While queued or processing, reload once the worker finishes so the saved result is shown. */
+(function () {
+  const app = document.getElementById('detail-app');
+  if (!app || app.dataset.finished === '1') return;
+  const timer = setInterval(async () => {
+    try {
+      const res = await fetch(app.dataset.apiUrl, {credentials: 'same-origin', headers: {Accept: 'application/json'}});
+      if (!res.ok) { clearInterval(timer); return; }
+      const data = await res.json();
+      if (data.status === 'completed' || data.status === 'failed') { clearInterval(timer); location.reload(); }
+    } catch (err) { /* keep trying */ }
+  }, document.hidden ? 5000 : 2000);
+})();
+document.querySelectorAll('[data-incident-form]').forEach(form => form.addEventListener('submit', () => {
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Creating incident…';
+}));
+</script>
+{% endblock %}

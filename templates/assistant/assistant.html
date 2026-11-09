@@ -1,25 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}Assistant — {{ machine.model_name }}{% endblock %}
+{% block title %}Assistant - {{ machine.model_name }}{% endblock %}
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-  <div>
-    <div class="text-secondary small">Selected machine</div>
-    <h1 class="h3 mb-0">{{ machine.model_name }} <small class="text-secondary">{{ machine.machine_id }} · {{ machine.name }}</small></h1>
-  </div>
+<div class="page-header">
+  <div><div class="page-eyebrow">Machine knowledge workspace</div><h1 class="page-heading">{{ machine.model_name }}</h1><p class="page-subtitle">{{ machine.machine_id }} &middot; {{ machine.name }}</p></div>
   <a class="btn btn-outline-secondary" href="{% url 'engineer-dashboard' %}">Change machine</a>
 </div>
-<div class="alert alert-secondary py-2 small">
-  Searching only: {% for m in manuals %}<strong>{{ m.document_id }}</strong> rev {{ m.revision }}{% if not forloop.last %}, {% endif %}{% empty %}<em>no indexed manuals for this machine</em>{% endfor %}.
-  Answers are grounded in these manuals only; if the evidence is missing the assistant will say so.
-</div>
-<div id="chat-log" class="mb-3"></div>
-<form id="ask-form" class="card card-body shadow-sm" data-machine="{{ machine.machine_id }}" data-url="{% url 'api-ask' %}">
-  <label class="form-label fw-semibold" for="question">Your question about {{ machine.model_name }}</label>
-  <div class="input-group">
-    <input class="form-control" id="question" maxlength="1000" placeholder="e.g. What does E17 mean?" autocomplete="off" required>
-    <button class="btn btn-primary" id="ask-btn" type="submit">Ask</button>
-  </div>
-</form>
+<div class="card mb-4"><div class="card-body py-3">
+  <div class="section-title mb-1">Evidence scope</div><div class="evidence-note">Searching only the indexed manuals for this machine. If evidence is unavailable, the assistant will say so.</div>
+  <div class="mt-2">{% for m in manuals %}<span class="manual-pill">{{ m.document_id }} &middot; Rev {{ m.revision }}</span>{% empty %}<span class="text-secondary small">No indexed manuals for this machine.</span>{% endfor %}</div>
+</div></div>
+<div class="card chat-response mb-3"><div class="card-header d-flex justify-content-between align-items-center"><div><div class="section-title">Engineering conversation</div><div class="section-kicker">Every answer includes traceable source evidence.</div></div><span class="badge text-bg-secondary">Machine scoped</span></div><div class="card-body"><div id="chat-log"></div></div></div>
+<form id="ask-form" class="card ask-panel" data-machine="{{ machine.machine_id }}" data-url="{% url 'api-ask' %}"><div class="card-body">
+  <label class="form-label" for="question">Ask about {{ machine.model_name }}</label>
+  <div class="input-group"><input class="form-control" id="question" maxlength="1000" placeholder="Describe a maintenance, operating or troubleshooting question" autocomplete="off" required><button class="btn btn-primary" id="ask-btn" type="submit">Ask manual assistant</button></div>
+</div></form>
 {% endblock %}
 {% block scripts %}
 {% load static %}

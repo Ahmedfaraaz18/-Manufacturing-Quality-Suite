@@ -1,0 +1,495 @@
+{
+  "method": "row-median illumination normalization, dark-region thresholding, connected components, compact-shape filtering",
+  "coordinate_annotations_available": false,
+  "defective_images_with_regions": 22,
+  "defective_images_without_regions": 8,
+  "normal_images_with_regions": 0,
+  "normal_images_without_regions": 30,
+  "defective_images_with_multiple_regions": 17,
+  "brightness_count_stable": 57,
+  "mean_processing_ms": 4.569,
+  "max_processing_ms": 35.782,
+  "rows": [
+    {
+      "image_id": "R2-001",
+      "filename": "inspection_001.png",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 35.782,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-002",
+      "filename": "inspection_002.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.451,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-003",
+      "filename": "inspection_003.png",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 4.351,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-004",
+      "filename": "inspection_004.jpg",
+      "label": "Defective",
+      "regions": 1,
+      "processing_ms": 2.38,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-005",
+      "filename": "inspection_005.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.697,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-006",
+      "filename": "inspection_006.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 4.409,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-007",
+      "filename": "inspection_007.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.941,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-008",
+      "filename": "inspection_008.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.785,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-009",
+      "filename": "inspection_009.png",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 8.854,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-010",
+      "filename": "inspection_010.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.172,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-011",
+      "filename": "inspection_011.png",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 4.068,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-012",
+      "filename": "inspection_012.jpg",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 5.455,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-013",
+      "filename": "inspection_013.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 4.74,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-014",
+      "filename": "inspection_014.jpg",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 3.457,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-015",
+      "filename": "inspection_015.png",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 3.653,
+      "brightness_count_stable": false
+    },
+    {
+      "image_id": "R2-016",
+      "filename": "inspection_016.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.768,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-017",
+      "filename": "inspection_017.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.2,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-018",
+      "filename": "inspection_018.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 5.038,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-019",
+      "filename": "inspection_019.png",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 4.071,
+      "brightness_count_stable": false
+    },
+    {
+      "image_id": "R2-020",
+      "filename": "inspection_020.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.826,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-021",
+      "filename": "inspection_021.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.542,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-022",
+      "filename": "inspection_022.jpg",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 4.012,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-023",
+      "filename": "inspection_023.png",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 5.256,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-024",
+      "filename": "inspection_024.jpg",
+      "label": "Defective",
+      "regions": 1,
+      "processing_ms": 3.918,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-025",
+      "filename": "inspection_025.png",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 4.073,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-026",
+      "filename": "inspection_026.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.639,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-027",
+      "filename": "inspection_027.png",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 3.838,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-028",
+      "filename": "inspection_028.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.831,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-029",
+      "filename": "inspection_029.png",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 10.051,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-030",
+      "filename": "inspection_030.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.689,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-031",
+      "filename": "inspection_031.png",
+      "label": "Defective",
+      "regions": 3,
+      "processing_ms": 4.109,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-032",
+      "filename": "inspection_032.jpg",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 4.326,
+      "brightness_count_stable": false
+    },
+    {
+      "image_id": "R2-033",
+      "filename": "inspection_033.png",
+      "label": "Defective",
+      "regions": 3,
+      "processing_ms": 8.267,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-034",
+      "filename": "inspection_034.jpg",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 3.814,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-035",
+      "filename": "inspection_035.png",
+      "label": "Defective",
+      "regions": 4,
+      "processing_ms": 4.274,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-036",
+      "filename": "inspection_036.jpg",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 3.086,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-037",
+      "filename": "inspection_037.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.065,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-038",
+      "filename": "inspection_038.jpg",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 3.409,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-039",
+      "filename": "inspection_039.png",
+      "label": "Defective",
+      "regions": 0,
+      "processing_ms": 2.995,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-040",
+      "filename": "inspection_040.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.832,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-041",
+      "filename": "inspection_041.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.574,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-042",
+      "filename": "inspection_042.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 5.624,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-043",
+      "filename": "inspection_043.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 4.46,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-044",
+      "filename": "inspection_044.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.684,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-045",
+      "filename": "inspection_045.png",
+      "label": "Defective",
+      "regions": 3,
+      "processing_ms": 7.579,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-046",
+      "filename": "inspection_046.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 5.028,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-047",
+      "filename": "inspection_047.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 4.703,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-048",
+      "filename": "inspection_048.jpg",
+      "label": "Defective",
+      "regions": 1,
+      "processing_ms": 3.037,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-049",
+      "filename": "inspection_049.png",
+      "label": "Defective",
+      "regions": 1,
+      "processing_ms": 3.013,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-050",
+      "filename": "inspection_050.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.542,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-051",
+      "filename": "inspection_051.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 4.937,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-052",
+      "filename": "inspection_052.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.842,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-053",
+      "filename": "inspection_053.png",
+      "label": "Defective",
+      "regions": 1,
+      "processing_ms": 3.191,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-054",
+      "filename": "inspection_054.jpg",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 4.301,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-055",
+      "filename": "inspection_055.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 6.51,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-056",
+      "filename": "inspection_056.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.997,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-057",
+      "filename": "inspection_057.png",
+      "label": "Defective",
+      "regions": 2,
+      "processing_ms": 5.064,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-058",
+      "filename": "inspection_058.jpg",
+      "label": "Defective",
+      "regions": 3,
+      "processing_ms": 3.979,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-059",
+      "filename": "inspection_059.png",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 3.224,
+      "brightness_count_stable": true
+    },
+    {
+      "image_id": "R2-060",
+      "filename": "inspection_060.jpg",
+      "label": "Normal",
+      "regions": 0,
+      "processing_ms": 2.733,
+      "brightness_count_stable": true
+    }
+  ],
+  "limitations": "No bounding boxes or masks are supplied. Region counts are not localization ground truth; no IoU, pixel accuracy, or localization recall is reported."
+}

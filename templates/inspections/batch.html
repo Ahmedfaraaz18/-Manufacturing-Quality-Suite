@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Batch #{{ batch.pk }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-eyebrow">Inspection batch</div><h1 class="page-heading">Batch #{{ batch.pk }}</h1>
+    <p class="page-subtitle">{{ batch.total_files }} file(s) · {{ batch.product.product_id }} · submitted {{ batch.created_at|date:"Y-m-d H:i" }} UTC by {{ batch.submitted_by.username }}</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-primary" href="{% url 'inspection-batch-pdf-report' batch.pk %}">Download batch PDF</a>
+    {% if user.role == 'engineer' %}<a class="btn btn-outline-secondary" href="{% url 'inspection-upload' %}">New inspection</a>
+    {% elif user.role == 'supervisor' %}<a class="btn btn-outline-secondary" href="{% url 'inspection-supervisor' %}">Review queue</a>
+    {% else %}<a class="btn btn-outline-secondary" href="{% url 'inspection-admin' %}">Overview</a>{% endif %}
+  </div>
+</div>
+<div id="batch-app" data-api-url="{% url 'api-batch-detail' batch.pk %}">
+  <div class="card"><div class="card-body empty-state"><div class="es-title">Loading batch status…</div><noscript>Enable JavaScript to see live status, or open the history page.</noscript></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'assistant/js/common.js' %}"></script>
+<script src="{% static 'inspections/js/inspect-common.js' %}"></script>
+<script>
+(function () {
+  const app = document.getElementById('batch-app');
+  Inspect.poll(app.dataset.apiUrl, d => d.is_finished, (data, timedOut) => {
+    if (data) app.replaceChildren(Inspect.batchPanel(data));
+    if (timedOut) app.appendChild(Inspect.el('p', {class: 'text-secondary mt-2', text: 'Still processing. Reload this page later; progress is saved.'}));
+  }, {maxMs: 600000});
+})();
+</script>
+{% endblock %}

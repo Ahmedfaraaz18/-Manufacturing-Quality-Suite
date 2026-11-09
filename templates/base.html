@@ -3,43 +3,128 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Manufacturing Manual Assistant{% endblock %}</title>
+  <title>{% block title %}Manufacturing Suite{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'assistant/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'assistant/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'inspections/css/inspections.css' %}">
+  {% block head %}{% endblock %}
 </head>
-<body class="bg-body-tertiary">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="{% url 'home' %}">Manual Assistant</a>
-    {% if user.is_authenticated %}
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav me-auto">
-        {% if user.role == 'administrator' %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'admin-dashboard' %}">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'machine-registration' %}">Machines</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'manual-upload' %}">Upload manual</a></li>
-        {% elif user.role == 'engineer' %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'engineer-dashboard' %}">Machines</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'engineer-history' %}">My history</a></li>
-        {% elif user.role == 'supervisor' %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'supervisor-dashboard' %}">Question history</a></li>
+<body class="{% if user.is_authenticated %}app-shell{% else %}auth-shell{% endif %}">
+<a class="skip-link" href="#main-content">Skip to content</a>
+{% if user.is_authenticated %}
+<div class="app-layout">
+  <aside class="app-sidebar" aria-label="Primary navigation">
+    <a class="brand" href="{% url 'home' %}"><span class="brand-mark">MS</span><span>Manufacturing<br><strong>Quality Suite</strong></span></a>
+    <div class="sidebar-label">Quality operations</div>
+    <nav class="sidebar-nav">
+      {% if user.role == 'administrator' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-admin' %}is-active{% endif %}" href="{% url 'inspection-admin' %}" {% if request.resolver_match.url_name == 'inspection-admin' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">01</span><span>Products &amp; overview</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-intelligence' %}is-active{% endif %}" href="{% url 'inspection-intelligence' %}" {% if request.resolver_match.url_name == 'inspection-intelligence' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">02</span><span>Quality intelligence</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">03</span><span>Quality incidents</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-evaluation' %}is-active{% endif %}" href="{% url 'inspection-evaluation' %}" {% if request.resolver_match.url_name == 'inspection-evaluation' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">04</span><span>Model evaluation</span></a>
+      {% elif user.role == 'engineer' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-upload' %}is-active{% endif %}" href="{% url 'inspection-upload' %}" {% if request.resolver_match.url_name == 'inspection-upload' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">01</span><span>New inspection</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-history' or request.resolver_match.url_name == 'inspection-detail' %}is-active{% endif %}" href="{% url 'inspection-history' %}" {% if request.resolver_match.url_name == 'inspection-history' or request.resolver_match.url_name == 'inspection-detail' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">02</span><span>My inspections</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">03</span><span>Quality incidents</span></a>
+      {% elif user.role == 'supervisor' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-supervisor' %}is-active{% endif %}" href="{% url 'inspection-supervisor' %}" {% if request.resolver_match.url_name == 'inspection-supervisor' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">01</span><span>Inspection reviews</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'inspection-intelligence' %}is-active{% endif %}" href="{% url 'inspection-intelligence' %}" {% if request.resolver_match.url_name == 'inspection-intelligence' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">02</span><span>Quality intelligence</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true">03</span><span>Quality incidents</span></a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-label sidebar-label-spaced">Manual assistant</div>
+    <nav class="sidebar-nav">
+      {% if user.role == 'administrator' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'admin-dashboard' %}is-active{% endif %}" href="{% url 'admin-dashboard' %}" {% if request.resolver_match.url_name == 'admin-dashboard' %}aria-current="page"{% endif %}><span>Overview</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'machine-registration' %}is-active{% endif %}" href="{% url 'machine-registration' %}" {% if request.resolver_match.url_name == 'machine-registration' %}aria-current="page"{% endif %}><span>Machines</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'manual-upload' %}is-active{% endif %}" href="{% url 'manual-upload' %}" {% if request.resolver_match.url_name == 'manual-upload' %}aria-current="page"{% endif %}><span>Document upload</span></a>
+      {% elif user.role == 'engineer' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'engineer-dashboard' or request.resolver_match.url_name == 'assistant' %}is-active{% endif %}" href="{% url 'engineer-dashboard' %}" {% if request.resolver_match.url_name == 'engineer-dashboard' or request.resolver_match.url_name == 'assistant' %}aria-current="page"{% endif %}><span>Machine workspace</span></a>
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'engineer-history' %}is-active{% endif %}" href="{% url 'engineer-history' %}" {% if request.resolver_match.url_name == 'engineer-history' %}aria-current="page"{% endif %}><span>My question history</span></a>
+      {% elif user.role == 'supervisor' %}
+        <a class="sidebar-link {% if request.resolver_match.url_name == 'supervisor-dashboard' %}is-active{% endif %}" href="{% url 'supervisor-dashboard' %}" {% if request.resolver_match.url_name == 'supervisor-dashboard' %}aria-current="page"{% endif %}><span>Question history</span></a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-foot"><span class="sidebar-foot-indicator"></span> Evidence-led operations<br><span>Manufacturing Quality Suite</span></div>
+  </aside>
+  <div class="app-workspace">
+    <header class="app-header">
+      <div class="topbar-context">
+        <nav class="breadcrumb-nav" aria-label="Breadcrumb"><a href="{% url 'home' %}">Workspace</a><span aria-hidden="true">/</span>
+          {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}<span>Quality incidents</span>
+          {% elif request.resolver_match.url_name == 'inspection-upload' or request.resolver_match.url_name == 'inspection-history' or request.resolver_match.url_name == 'inspection-detail' %}<span>Visual inspection</span>
+          {% elif request.resolver_match.url_name == 'inspection-admin' or request.resolver_match.url_name == 'inspection-intelligence' or request.resolver_match.url_name == 'inspection-evaluation' %}<span>Quality operations</span>
+          {% elif request.resolver_match.url_name == 'assistant' or request.resolver_match.url_name == 'engineer-dashboard' or request.resolver_match.url_name == 'engineer-history' %}<span>Manual assistant</span>
+          {% else %}<span>Manufacturing quality</span>{% endif %}
+        </nav>
+        {% if request.resolver_match.url_name != 'inspection-detail' %}
+        <div class="topbar-title">
+          {% if request.resolver_match.url_name == 'quality-incident-detail' %}Incident workspace
+          {% elif request.resolver_match.url_name == 'quality-incident-list' %}Quality incidents
+          {% elif request.resolver_match.url_name == 'inspection-upload' %}New inspection
+          {% elif request.resolver_match.url_name == 'inspection-history' %}My inspections
+          {% elif request.resolver_match.url_name == 'inspection-detail' %}Inspection record
+          {% elif request.resolver_match.url_name == 'inspection-supervisor' %}Inspection reviews
+          {% elif request.resolver_match.url_name == 'inspection-admin' %}Products &amp; overview
+          {% elif request.resolver_match.url_name == 'inspection-intelligence' %}Quality intelligence
+          {% elif request.resolver_match.url_name == 'inspection-evaluation' %}Model evaluation
+          {% elif request.resolver_match.url_name == 'assistant' %}Manual assistant
+          {% else %}Operations workspace{% endif %}
+        </div>
         {% endif %}
-      </ul>
-      <form method="post" action="{% url 'logout' %}" class="d-flex align-items-center gap-2">
-        {% csrf_token %}
-        <span class="navbar-text small">{{ user.username }} <span class="badge text-bg-secondary">{{ user.get_role_display }}</span></span>
-        <button class="btn btn-outline-light btn-sm" type="submit">Sign out</button>
-      </form>
+      </div>
+      <div class="topbar-actions">
+        <button class="mobile-menu" type="button" data-bs-toggle="collapse" data-bs-target="#mobile-nav" aria-controls="mobile-nav" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+        <div class="user-panel">
+          <span class="user-avatar" aria-hidden="true">{{ user.username|first|upper }}</span>
+          <span class="user-details"><strong>{{ user.username }}</strong><small>{{ user.get_role_display }}</small></span>
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="signout-link" type="submit">Sign out</button></form>
+        </div>
+      </div>
+    </header>
+    <nav class="collapse mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+      {% if user.role == 'administrator' %}
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-admin' %}is-active{% endif %}" href="{% url 'inspection-admin' %}" {% if request.resolver_match.url_name == 'inspection-admin' %}aria-current="page"{% endif %}>Products &amp; overview</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-intelligence' %}is-active{% endif %}" href="{% url 'inspection-intelligence' %}" {% if request.resolver_match.url_name == 'inspection-intelligence' %}aria-current="page"{% endif %}>Quality intelligence</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}>Quality incidents</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-evaluation' %}is-active{% endif %}" href="{% url 'inspection-evaluation' %}" {% if request.resolver_match.url_name == 'inspection-evaluation' %}aria-current="page"{% endif %}>Model evaluation</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'admin-dashboard' %}is-active{% endif %}" href="{% url 'admin-dashboard' %}" {% if request.resolver_match.url_name == 'admin-dashboard' %}aria-current="page"{% endif %}>Manual overview</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'machine-registration' %}is-active{% endif %}" href="{% url 'machine-registration' %}" {% if request.resolver_match.url_name == 'machine-registration' %}aria-current="page"{% endif %}>Machines</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'manual-upload' %}is-active{% endif %}" href="{% url 'manual-upload' %}" {% if request.resolver_match.url_name == 'manual-upload' %}aria-current="page"{% endif %}>Document upload</a>
+      {% elif user.role == 'engineer' %}
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-upload' %}is-active{% endif %}" href="{% url 'inspection-upload' %}" {% if request.resolver_match.url_name == 'inspection-upload' %}aria-current="page"{% endif %}>New inspection</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-history' or request.resolver_match.url_name == 'inspection-detail' %}is-active{% endif %}" href="{% url 'inspection-history' %}" {% if request.resolver_match.url_name == 'inspection-history' or request.resolver_match.url_name == 'inspection-detail' %}aria-current="page"{% endif %}>My inspections</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}>Quality incidents</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'engineer-dashboard' or request.resolver_match.url_name == 'assistant' %}is-active{% endif %}" href="{% url 'engineer-dashboard' %}" {% if request.resolver_match.url_name == 'engineer-dashboard' or request.resolver_match.url_name == 'assistant' %}aria-current="page"{% endif %}>Machine workspace</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'engineer-history' %}is-active{% endif %}" href="{% url 'engineer-history' %}" {% if request.resolver_match.url_name == 'engineer-history' %}aria-current="page"{% endif %}>My question history</a>
+      {% else %}
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-supervisor' %}is-active{% endif %}" href="{% url 'inspection-supervisor' %}" {% if request.resolver_match.url_name == 'inspection-supervisor' %}aria-current="page"{% endif %}>Inspection reviews</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'inspection-intelligence' %}is-active{% endif %}" href="{% url 'inspection-intelligence' %}" {% if request.resolver_match.url_name == 'inspection-intelligence' %}aria-current="page"{% endif %}>Quality intelligence</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}is-active{% endif %}" href="{% url 'quality-incident-list' %}" {% if request.resolver_match.url_name == 'quality-incident-list' or request.resolver_match.url_name == 'quality-incident-detail' %}aria-current="page"{% endif %}>Quality incidents</a>
+        <a class="mobile-nav-link {% if request.resolver_match.url_name == 'supervisor-dashboard' %}is-active{% endif %}" href="{% url 'supervisor-dashboard' %}" {% if request.resolver_match.url_name == 'supervisor-dashboard' %}aria-current="page"{% endif %}>Question history</a>
+      {% endif %}
     </div>
-    {% endif %}
-  </div>
-</nav>
-<main class="container py-4">
-  {% if messages %}{% for m in messages %}<div class="alert alert-{{ m.tags|default:'info' }}">{{ m }}</div>{% endfor %}{% endif %}
+    <main class="app-content" id="main-content" tabindex="-1">
+{% else %}
+<main class="auth-content" id="main-content" tabindex="-1">
+{% endif %}
+  {% if messages %}{% for m in messages %}<div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %} app-alert" {% if m.tags == 'error' %}role="alert"{% else %}role="status" aria-live="polite"{% endif %}>{{ m }}</div>{% endfor %}{% endif %}
   {% block content %}{% endblock %}
 </main>
+{% if user.is_authenticated %}
+  </div>
+</div>
+{% endif %}
 <script src="{% static 'assistant/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+document.querySelectorAll('.mobile-nav-link[aria-current="page"]').forEach(link => link.classList.add('is-active'));
+document.getElementById('mobile-nav')?.addEventListener('shown.bs.collapse', () => {
+  document.querySelector('.mobile-menu')?.setAttribute('aria-expanded', 'true');
+});
+document.getElementById('mobile-nav')?.addEventListener('hidden.bs.collapse', () => {
+  document.querySelector('.mobile-menu')?.setAttribute('aria-expanded', 'false');
+});
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

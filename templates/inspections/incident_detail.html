@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block title %}Quality incident #{{ incident.pk }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Quality incident · {{ incident.product_id }}</div>
+    <h1 class="page-heading">Incident #{{ incident.pk }}</h1>
+    <p class="page-subtitle">Created {{ incident.created_at|date:"Y-m-d H:i:s" }} UTC · Inspection #{{ incident.inspection_id }}</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'quality-incident-list' %}">Incident workspace</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center gap-3">
+        <div><div class="section-title">Incident overview</div><div class="section-kicker">Persisted summary and original model result</div></div>
+        <span class="badge {% if incident.evidence_status == 'sufficient' %}text-bg-success{% else %}text-bg-warning{% endif %}">{{ incident.get_evidence_status_display }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6"><div class="incident-fact"><span>Incident reference</span><strong>#{{ incident.pk }}</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Inspection</span><a href="{% url 'inspection-detail' incident.inspection_id %}">#{{ incident.inspection_id }}</a></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Product</span><strong>{{ incident.product_id }} · {{ incident.inspection.product.name }}</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Original AI prediction</span><strong><span class="chip chip-{{ incident.original_predicted_class|lower }}">{{ incident.original_predicted_class }}</span></strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Model version</span><strong>{{ incident.original_model_version }}</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Confidence</span><strong>{% if incident.confidence_percent is not None %}{{ incident.confidence_percent|floatformat:2 }}%{% else %}Not recorded{% endif %}</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Defect probability</span><strong>{% if incident.defect_probability_percent is not None %}{{ incident.defect_probability_percent|floatformat:2 }}%{% else %}Not recorded{% endif %}</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Inspection timestamp</span><strong>{{ incident.inspection.completed_at|date:"Y-m-d H:i:s" }} UTC</strong></div></div>
+          <div class="col-sm-6"><div class="incident-fact"><span>Created by</span><strong>{{ incident.created_by.username }}</strong></div></div>
+        </div>
+        {% if inspection_review %}
+        <div class="alert alert-light border mb-3">
+          <strong>Separate Round 2 human review:</strong> {{ inspection_review.reviewed_class }}
+          {% if inspection_review.is_correction %}(corrected from {{ inspection_review.original_predicted_class }}){% else %}(confirmed){% endif %}
+          by {{ inspection_review.reviewer.username }}. This does not change incident eligibility or the original AI prediction.
+        </div>
+        {% endif %}
+        <h2 class="section-title mb-2">Incident summary</h2>
+        <p class="answer-text mb-0">{{ incident.summary }}</p>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-header"><div class="section-title">Suggested actions</div><div class="section-kicker">Each recommendation is tied to a retrieved mapped SOP passage</div></div>
+      <div class="card-body">
+        {% if incident.evidence_status == 'insufficient' %}
+          <div class="status-insufficient rounded-3 p-3" role="status">
+            <div class="evidence-state-heading"><span class="evidence-state-icon" aria-hidden="true">!</span><strong>Manual review required</strong></div>
+            <p class="mb-0 mt-1">{{ incident.evidence_failure_reason }}</p>
+          </div>
+        {% elif incident.evidence_status == 'sufficient' %}
+          <div class="status-sufficient rounded-3 p-3 mb-3" role="status">
+            <div class="evidence-state-heading"><span class="evidence-state-icon" aria-hidden="true">✓</span><strong>Applicable SOP evidence retrieved</strong></div>
+            <p class="mb-0 mt-1">Recommendations below are linked to verified passages from the mapped product procedures. Supervisor review is still required.</p>
+          </div>
+          {% if incident.suggested_actions %}
+          <ol class="action-list mb-0">
+          {% for action in incident.suggested_actions %}
+            <li class="action-item">
+              <span class="action-number" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+              <div class="action-content">
+                <p>{{ action.action }}</p>
+                <div class="source-card"><div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap mb-2">
+                    <strong>{{ action.document_name }} · {{ action.document_id }}</strong>
+                    <span class="small text-secondary">Revision {{ action.revision }} · PDF page {{ action.page_number }}</span>
+                  </div>
+                  <blockquote class="passage mb-2">{{ action.supporting_passage }}</blockquote>
+                  <a href="{{ action.source_link }}" target="_blank" rel="noopener">Open cited SOP page <span aria-hidden="true">↗</span></a>
+                </div></div>
+              </div>
+            </li>
+          {% endfor %}
+          </ol>
+          {% else %}
+          <div class="empty-state py-3"><div class="es-title">No supported actions saved</div>Manual review is required before follow-up.</div>
+          {% endif %}
+        {% else %}
+          <div class="status-insufficient rounded-3 p-3" role="status"><strong>Manual review required</strong><p class="mb-0 mt-1">{{ incident.evidence_failure_reason|default:"No verified evidence status is available." }}</p></div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header"><div class="section-title">SOP evidence</div><div class="section-kicker">Mapped source references saved with this incident</div></div>
+      <div class="card-body">
+        {% for source in incident.source_references %}
+        <div class="source-card mb-3"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+            <strong>{{ source.document_name }} · {{ source.document_id }}</strong>
+            <span class="small text-secondary">Revision {{ source.revision }} · PDF page {{ source.page_number }}</span>
+          </div>
+          <blockquote class="passage mt-2 mb-2">{{ source.passage }}</blockquote>
+          <a href="{{ source.source_link }}" target="_blank" rel="noopener">Open source PDF page</a>
+        </div></div>
+        {% empty %}
+        <div class="empty-state py-3"><div class="es-title">No mapped SOP passages were available</div>The evidence failure reason is recorded above.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <section class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-start gap-2"><div><div class="section-title">Original inspection</div><div class="section-kicker">Saved Round 2 evidence · read only</div></div><a class="small text-nowrap" href="{% url 'inspection-detail' incident.inspection_id %}">Open record</a></div>
+      <div class="card-body">
+        {% if incident.inspection.image %}
+          <a class="inspection-image-link" href="{% url 'inspection-image' incident.inspection_id %}" target="_blank" rel="noopener" aria-label="Open original inspection image">
+            <img class="incident-inspection-image" src="{% url 'inspection-image' incident.inspection_id %}" alt="Original image from inspection #{{ incident.inspection_id }}" loading="lazy">
+          </a>
+        {% else %}
+          <div class="empty-state py-4"><div class="es-title">No image available</div>The linked inspection record remains available.</div>
+        {% endif %}
+        <div class="inspection-result-strip mt-3">
+          <span class="chip chip-{{ incident.original_predicted_class|lower }}">{{ incident.original_predicted_class }}</span>
+          <span class="small text-secondary">{{ incident.original_model_version }}</span>
+        </div>
+        {% if inspection_review %}
+        <div class="human-review-note mt-3">
+          <div class="small fw-bold">Separate human review</div>
+          <div>{{ inspection_review.get_reviewed_class_display|default:inspection_review.reviewed_class }}{% if inspection_review.is_correction %} · corrected by {{ inspection_review.reviewer.username }}{% else %} · confirmed by {{ inspection_review.reviewer.username }}{% endif %}</div>
+          <small>Does not alter the original model result.</small>
+        </div>
+        {% else %}
+        <p class="small text-secondary mt-3 mb-0">No separate Round 2 human correction has been recorded.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-header"><div class="section-title">Supervisor review</div><div class="section-kicker">Stored independently from evidence status</div></div>
+      <div class="card-body">
+        <p><span class="badge {% if incident.review_status == 'approved' %}text-bg-success{% elif incident.review_status == 'needs_info' %}text-bg-warning{% else %}text-bg-secondary{% endif %}">{{ incident.get_review_status_display }}</span></p>
+        {% if incident.reviewed_at %}
+          <div class="review-outcome review-outcome-{{ incident.review_status }} mb-3">
+            <strong>{{ incident.get_review_status_display }}</strong>
+            <span>Saved by {{ incident.reviewed_by.username }} · {{ incident.reviewed_at|date:"Y-m-d H:i" }} UTC</span>
+          </div>
+          <dl class="kv mb-3">
+            <dt>Reviewer</dt><dd>{{ incident.reviewed_by.username }}</dd>
+            <dt>Reviewed</dt><dd>{{ incident.reviewed_at|date:"Y-m-d H:i:s" }} UTC</dd>
+            <dt>Comment</dt><dd>{{ incident.supervisor_comment|linebreaksbr }}</dd>
+          </dl>
+        {% endif %}
+        {% if can_review_incident %}
+          <form method="post" action="{% url 'quality-incident-review' incident.pk %}" data-review-form>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="decision">Decision</label>
+              <select class="form-select" id="decision" name="decision" required>
+                {% if incident.evidence_status == 'sufficient' %}<option value="approved">Approved for follow-up</option>{% endif %}
+                <option value="needs_info">Needs more information</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="review-comment">Required comment</label>
+              <textarea class="form-control" id="review-comment" name="comment" rows="4" maxlength="1000" required></textarea>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Save supervisor decision</button>
+          </form>
+          {% if incident.evidence_status == 'insufficient' %}<p class="small text-secondary mt-3 mb-0">Approval is unavailable while required SOP evidence is insufficient.</p>{% endif %}
+        {% elif incident.review_status == 'pending' %}
+          <p class="text-secondary mb-0">{% if user.role == 'engineer' %}Only a Supervisor may review this incident.{% else %}This record is read-only for your role.{% endif %}</p>
+        {% else %}
+          <p class="small text-secondary mb-0">This decision is saved and cannot be overwritten by a duplicate review request.</p>
+        {% endif %}
+        {% if incident.review_status == 'approved' %}<p class="disclaimer mt-3 mb-0">Approved for follow-up does not certify the item as Normal or authorize product release.</p>{% endif %}
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header"><div class="section-title">Incident activity</div></div>
+      <div class="card-body">
+        <ol class="decision-timeline mb-0">
+          <li><strong>Incident created</strong><span>{{ incident.created_at|date:"Y-m-d H:i:s" }} UTC by {{ incident.created_by.username }}</span></li>
+          {% if incident.reviewed_at %}<li><strong>{{ incident.get_review_status_display }}</strong><span>{{ incident.reviewed_at|date:"Y-m-d H:i:s" }} UTC by {{ incident.reviewed_by.username }}</span></li>{% else %}<li><strong>Pending Supervisor review</strong><span>No review decision has been recorded.</span></li>{% endif %}
+        </ol>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-review-form]').forEach(form => form.addEventListener('submit', event => {
+  if (!window.confirm('Save this Supervisor decision? A saved decision cannot be overwritten.')) {
+    event.preventDefault();
+    return;
+  }
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Saving decision…';
+}));
+</script>
+{% endblock %}
